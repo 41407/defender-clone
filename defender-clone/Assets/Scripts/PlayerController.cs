@@ -32,6 +32,14 @@ public class PlayerController : MonoBehaviour
         TranslateY();
     }
 
+    void OnCollisionEnter2D(Collision2D coll)
+    {
+        if (coll.collider.gameObject.layer == LayerMask.NameToLayer("Enemy") || coll.collider.gameObject.layer == LayerMask.NameToLayer("Enemy Bullet"))
+        {
+            gameObject.SetActive(false);
+        }
+    }
+
     private void TranslateX()
     {
         float clampTranslate = firing ? maxVelocity * firingVelocityModifier : maxVelocity;
