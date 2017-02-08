@@ -20,6 +20,7 @@ public class DisableParticleAfterDuration : MonoBehaviour
     private IEnumerator DisableAfterDuration(float time)
     {
         yield return new WaitForSeconds(time);
+        particles.Stop();
         gameObject.SetActive(false);
     }
 }

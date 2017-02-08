@@ -29,7 +29,14 @@ public class WrapPositionController : MonoBehaviour
             {
                 transform.Translate(new Vector2(levelWidth * sign, 0));
             }
-            yield return new WaitForSeconds(checkInterval);
+            if (checkInterval > 0)
+            {
+                yield return new WaitForSeconds(checkInterval);
+            }
+            else
+            {
+                yield return null;
+            }
         }
     }
 }
