@@ -93,6 +93,7 @@ public class PlayerController : MonoBehaviour
         if (releasedTouchId == movingTouchId)
         {
             moving = false;
+            firing = false;
             targetPosition = transform.position;
         }
         else if (releasedTouchId == firingTouchId)
