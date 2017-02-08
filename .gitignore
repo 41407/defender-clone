@@ -31,3 +31,6 @@ sysinfo.txt
 
 # OSX specific
 .DS_Store
+
+# vscode settings
+/defender-clone/.vscode/
