@@ -7,6 +7,8 @@ public class GameController : MonoBehaviour
     public Camera cam;
     public float levelWidth = 70;
     public GameObject player;
+    public GameObject playerPrefab;
+    public int lives = 3;
 
     void Awake()
     {
@@ -15,14 +17,21 @@ public class GameController : MonoBehaviour
 
     void OnEnable()
     {
-        player = Component.FindObjectOfType<PlayerController>().gameObject;
+        StartCoroutine(CoreCo());
     }
 
-    void Update()
+    private IEnumerator CoreCo()
     {
-        if (player == null)
+        while (lives >= 0)
         {
-            print("Lost a life!");
+            yield return new WaitForSeconds(1);
+            player = Instantiate(playerPrefab, (Vector2)cam.transform.position, Quaternion.identity);
+            while (player.activeInHierarchy)
+            {
+                yield return null;
+            }
+            lives--;
         }
+        print("Game over!");
     }
 }

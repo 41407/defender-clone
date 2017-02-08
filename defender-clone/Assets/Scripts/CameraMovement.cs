@@ -9,7 +9,6 @@ public class CameraMovement : MonoBehaviour
 
     void Awake()
     {
-        player = Component.FindObjectOfType<PlayerController>().transform;
     }
 
     void OnEnable()
@@ -19,6 +18,17 @@ public class CameraMovement : MonoBehaviour
 
     void Update()
     {
+        if (player == null)
+        {
+            try
+            {
+                player = Component.FindObjectOfType<PlayerController>().transform;
+            }
+            catch (System.NullReferenceException)
+            {
+                print("Camera could not find player.");
+            }
+        }
         transform.position = Vector3.Lerp(transform.position, targetPosition, 10 * Time.deltaTime);
         transform.position = new Vector3(transform.position.x, 0, -10);
     }
