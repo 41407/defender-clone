@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class EnemyBehaviour : MonoBehaviour
 {
+    private GameController gameController;
     public enum EnemyType
     {
         follower,
@@ -12,6 +13,11 @@ public class EnemyBehaviour : MonoBehaviour
     public EnemyType enemyType;
     private Transform player;
     public float speed = 3;
+
+    void Awake()
+    {
+        gameController = Component.FindObjectOfType<GameController>();
+    }
 
     void Update()
     {
@@ -59,7 +65,7 @@ public class EnemyBehaviour : MonoBehaviour
         else
         {
             transform.Translate(new Vector2(transform.position.x - player.position.x, 0).normalized * speed * Time.deltaTime);
-            GetComponent<EnemyFiring>().FireBurst(player.position - transform.position, 3);
+            GetComponent<EnemyFiring>().FireBurst(player.position - transform.position, Mathf.Clamp(gameController.difficulty / 10, 3, 10));
         }
     }
 }

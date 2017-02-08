@@ -31,10 +31,10 @@ public class WaveController : MonoBehaviour
         float levelWidth = gameController.levelWidth;
         float step = levelWidth / (Mathf.Max(1, (float)difficulty));
         Vector2 newEnemySpawnerPosition = Vector2.zero;
-        for (float enemyX = 0; enemyX < levelWidth; enemyX += step)
+        for (int i = 0; i < difficulty; i++)
         {
             Factory.create.ByReference(enemySpawnerPrefab, newEnemySpawnerPosition + Vector2.up * Random.Range(0, 4), Quaternion.identity, transform);
-            newEnemySpawnerPosition += new Vector2(step, 0);
+            newEnemySpawnerPosition += new Vector2(Random.Range(-step * 0.5f, 2 * step), 0);
             yield return new WaitForSeconds(Random.Range(0.1f, 1.1f));
         }
         while (GetNumberOfAliveEnemies() > 2)
