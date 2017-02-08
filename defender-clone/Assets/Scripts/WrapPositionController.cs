@@ -25,7 +25,7 @@ public class WrapPositionController : MonoBehaviour
         {
             float positionDelta = gameController.cam.transform.position.x - transform.position.x;
             float sign = Mathf.Sign(positionDelta);
-            if (Mathf.Abs(positionDelta) > levelWidth)
+            if (Mathf.Abs(positionDelta) > levelWidth / 2)
             {
                 transform.Translate(new Vector2(levelWidth * sign, 0));
             }
