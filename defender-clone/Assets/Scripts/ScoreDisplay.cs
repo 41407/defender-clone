@@ -5,24 +5,26 @@ using UnityEngine;
 public class ScoreDisplay : MonoBehaviour
 {
     public string staticText = "";
-    public Vector3 targetScale = Vector3.one;
-    public float scoreUpdateScalingSmoothness = 0.5f;
     public int displayedScore = 0;
     private TextMesh text;
+    private float shake;
+    private Vector3 anchorPosition;
 
     void Awake()
     {
         text = GetComponent<TextMesh>();
+        anchorPosition = transform.localPosition;
     }
 
     void Update()
     {
         if (Score.score > displayedScore)
         {
-            transform.localScale = transform.localScale + Vector3.one * (Score.score - displayedScore);
+            shake += 0.125f;
         }
         displayedScore = Score.score;
         text.text = staticText + " " + displayedScore;
-        transform.localScale = Vector3.Lerp(transform.localScale, targetScale, scoreUpdateScalingSmoothness);
+        transform.localPosition = anchorPosition + (Vector3)Random.insideUnitCircle.normalized * shake;
+        shake = Mathf.Max(0, shake - Time.deltaTime);
     }
 }
