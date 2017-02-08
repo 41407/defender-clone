@@ -11,6 +11,12 @@ public class PlayerMovement : MonoBehaviour
     private Vector2 targetPosition;
     public float maxVelocity = 10;
     public float firingVelocityModifier = 0.4f;
+    private SpriteRenderer sprite;
+
+    void Awake()
+    {
+        sprite = transform.GetComponentInChildren<SpriteRenderer>();
+    }
 
     void OnEnable()
     {
@@ -28,6 +34,7 @@ public class PlayerMovement : MonoBehaviour
     private void TranslateX()
     {
         float clampTranslate = firing ? maxVelocity * firingVelocityModifier : maxVelocity;
+        sprite.flipX = targetPosition.x < transform.position.x;
         transform.Translate(Vector2.ClampMagnitude(new Vector2(targetPosition.x - transform.position.x, 0), clampTranslate) * Time.deltaTime);
     }
 
