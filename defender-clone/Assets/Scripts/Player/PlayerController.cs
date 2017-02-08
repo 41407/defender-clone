@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
+    private Rigidbody2D body;
     public bool moving = false;
     public bool firing = false;
     private int movingTouchId = -1;
@@ -18,6 +19,7 @@ public class PlayerController : MonoBehaviour
     void Awake()
     {
         sprite = transform.GetComponentInChildren<SpriteRenderer>();
+        body = GetComponent<Rigidbody2D>();
     }
 
     void OnEnable()
@@ -67,7 +69,7 @@ public class PlayerController : MonoBehaviour
 
     private void TranslateY()
     {
-        transform.Translate(Vector2.ClampMagnitude(new Vector2(0, targetPosition.y - transform.position.y), 2) * 10 * Time.deltaTime);
+        body.velocity = Vector2.ClampMagnitude(new Vector2(0, targetPosition.y - transform.position.y), 2) * 8;
     }
 
     void OnDisable()
