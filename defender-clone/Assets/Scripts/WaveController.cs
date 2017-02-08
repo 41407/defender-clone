@@ -4,9 +4,10 @@ using UnityEngine;
 
 public class WaveController : MonoBehaviour
 {
+    private GameController gameController;
     public bool waveInProgress = false;
     public GameObject enemySpawnerPrefab;
-    private GameController gameController;
+    public GameObject[] enemyPrefabs;
 
     void Awake()
     {
@@ -17,6 +18,11 @@ public class WaveController : MonoBehaviour
     {
         waveInProgress = true;
         StartCoroutine(StartWave(difficulty));
+    }
+
+    public GameObject GetEnemyPrefab()
+    {
+        return enemyPrefabs[Random.Range(0, enemyPrefabs.Length)];
     }
 
     private IEnumerator StartWave(int difficulty)

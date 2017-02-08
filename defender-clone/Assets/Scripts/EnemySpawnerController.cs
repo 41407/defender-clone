@@ -4,9 +4,14 @@ using UnityEngine;
 
 public class EnemySpawnerController : MonoBehaviour
 {
+    private WaveController waveController;
     public GameObject spawnParticlePrefab;
-    public GameObject enemyPrefab;
     public float spawnDelay;
+
+    void Awake()
+    {
+        waveController = Component.FindObjectOfType<WaveController>();
+    }
 
     void OnEnable()
     {
@@ -17,7 +22,7 @@ public class EnemySpawnerController : MonoBehaviour
     {
         Factory.create.ByReference(spawnParticlePrefab, transform.position, Quaternion.identity);
         yield return new WaitForSeconds(spawnDelay);
-        Factory.create.ByReference(enemyPrefab, transform.position, Quaternion.identity, transform.parent);
+        Factory.create.ByReference(waveController.GetEnemyPrefab(), transform.position, Quaternion.identity, transform.parent);
         gameObject.SetActive(false);
     }
 }
