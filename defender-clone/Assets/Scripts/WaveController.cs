@@ -16,10 +16,10 @@ public class WaveController : MonoBehaviour
     public void StartNewWave(int difficulty)
     {
         waveInProgress = true;
-        StartCoroutine(SpawnRegularEnemies(difficulty));
+        StartCoroutine(StartWave(difficulty));
     }
 
-    private IEnumerator SpawnRegularEnemies(int difficulty)
+    private IEnumerator StartWave(int difficulty)
     {
         yield return new WaitForSeconds(2);
         float levelWidth = gameController.levelWidth;
@@ -27,9 +27,28 @@ public class WaveController : MonoBehaviour
         Vector2 newEnemySpawnerPosition = Vector2.zero;
         for (float enemyX = 0; enemyX < levelWidth; enemyX += step)
         {
-            Instantiate(enemySpawnerPrefab, newEnemySpawnerPosition + Vector2.up * Random.Range(0, 4), Quaternion.identity);
+            Instantiate(enemySpawnerPrefab, newEnemySpawnerPosition + Vector2.up * Random.Range(0, 4), Quaternion.identity, transform);
             newEnemySpawnerPosition += new Vector2(step, 0);
             yield return new WaitForSeconds(Random.Range(0.1f, 1.1f));
         }
+        while (GetNumberOfAliveEnemies() > 2)
+        {
+            yield return new WaitForSeconds(0.5f);
+        }
+        waveInProgress = false;
+    }
+
+    private int GetNumberOfAliveEnemies()
+    {
+        int number = 0;
+        for (int i = 0; i < transform.childCount; i++)
+        {
+            if (transform.GetChild(i).gameObject.activeInHierarchy)
+            {
+                number++;
+            }
+        }
+        print("Active enemies: " + number);
+        return number;
     }
 }

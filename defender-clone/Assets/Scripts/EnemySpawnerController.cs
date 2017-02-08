@@ -17,7 +17,7 @@ public class EnemySpawnerController : MonoBehaviour
     {
         Instantiate(spawnParticlePrefab, transform.position, Quaternion.identity);
         yield return new WaitForSeconds(spawnDelay);
-        Instantiate(enemyPrefab, transform.position, Quaternion.identity);
+        Instantiate(enemyPrefab, transform.position, Quaternion.identity, transform.parent);
         gameObject.SetActive(false);
     }
 }
