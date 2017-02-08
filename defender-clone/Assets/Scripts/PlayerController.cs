@@ -13,6 +13,7 @@ public class PlayerController : MonoBehaviour
     public float firingVelocityModifier = 0.4f;
     private SpriteRenderer sprite;
     public Vector2 direction;
+    private bool invulnerable = false;
 
     void Awake()
     {
@@ -24,6 +25,8 @@ public class PlayerController : MonoBehaviour
         EventManager.OnButtonUp += StopMovingOrFiring;
         EventManager.OnButtonHold += UpdateTargetPosition;
         EventManager.OnButtonDown += StartMovingOrFiring;
+        targetPosition = transform.position;
+        StartCoroutine(SetSpawnInvulnerability());
     }
 
     void Update()
@@ -34,24 +37,30 @@ public class PlayerController : MonoBehaviour
 
     void OnCollisionEnter2D(Collision2D coll)
     {
-        if (coll.collider.gameObject.layer == LayerMask.NameToLayer("Enemy") || coll.collider.gameObject.layer == LayerMask.NameToLayer("Enemy Bullet"))
+        if (!invulnerable)
         {
-            Destroy(gameObject);
+            if (coll.collider.gameObject.layer == LayerMask.NameToLayer("Enemy") || coll.collider.gameObject.layer == LayerMask.NameToLayer("Enemy Bullet"))
+            {
+                Destroy(gameObject);
+            }
         }
     }
 
     private void TranslateX()
     {
         float clampTranslate = firing ? maxVelocity * firingVelocityModifier : maxVelocity;
-        if (targetPosition.x < transform.position.x)
+        if (Vector2.Distance(targetPosition, transform.position) > 0.25f)
         {
-            direction = Vector2.left;
-            sprite.flipX = true;
-        }
-        else
-        {
-            direction = Vector2.right;
-            sprite.flipX = false;
+            if (targetPosition.x < transform.position.x)
+            {
+                direction = Vector2.left;
+                sprite.flipX = true;
+            }
+            else
+            {
+                direction = Vector2.right;
+                sprite.flipX = false;
+            }
         }
         transform.Translate(Vector2.ClampMagnitude(new Vector2(targetPosition.x - transform.position.x, 0), clampTranslate) * Time.deltaTime);
     }
@@ -108,5 +117,12 @@ public class PlayerController : MonoBehaviour
         {
             firing = false;
         }
+    }
+
+    private IEnumerator SetSpawnInvulnerability()
+    {
+        invulnerable = true;
+        yield return new WaitForSeconds(2f);
+        invulnerable = false;
     }
 }
