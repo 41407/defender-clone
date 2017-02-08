@@ -27,7 +27,7 @@ public class WaveController : MonoBehaviour
         Vector2 newEnemySpawnerPosition = Vector2.zero;
         for (float enemyX = 0; enemyX < levelWidth; enemyX += step)
         {
-            Instantiate(enemySpawnerPrefab, newEnemySpawnerPosition + Vector2.up * Random.Range(0, 4), Quaternion.identity, transform);
+            Factory.create.ByReference(enemySpawnerPrefab, newEnemySpawnerPosition + Vector2.up * Random.Range(0, 4), Quaternion.identity, transform);
             newEnemySpawnerPosition += new Vector2(step, 0);
             yield return new WaitForSeconds(Random.Range(0.1f, 1.1f));
         }

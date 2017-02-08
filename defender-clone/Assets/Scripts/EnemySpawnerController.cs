@@ -15,9 +15,9 @@ public class EnemySpawnerController : MonoBehaviour
 
     private IEnumerator SpawnAfterDelay(float delay)
     {
-        Instantiate(spawnParticlePrefab, transform.position, Quaternion.identity);
+        Factory.create.ByReference(spawnParticlePrefab, transform.position, Quaternion.identity);
         yield return new WaitForSeconds(spawnDelay);
-        Instantiate(enemyPrefab, transform.position, Quaternion.identity, transform.parent);
+        Factory.create.ByReference(enemyPrefab, transform.position, Quaternion.identity, transform.parent);
         gameObject.SetActive(false);
     }
 }
