@@ -58,7 +58,7 @@ public class EnemyMovement : MonoBehaviour
         }
         else
         {
-            transform.Translate((transform.position - player.position).normalized * speed * Time.deltaTime);
+            transform.Translate(new Vector2(transform.position.x - player.position.x, 0).normalized * speed * Time.deltaTime);
             GetComponent<EnemyFiring>().FireBurst(player.position - transform.position, 3);
         }
     }
