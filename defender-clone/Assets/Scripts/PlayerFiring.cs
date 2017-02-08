@@ -38,6 +38,7 @@ public class PlayerFiring : MonoBehaviour
     public void Fire(Vector2 direction)
     {
         GameObject newBullet = Instantiate(bulletPrefab, transform.position, Quaternion.identity);
+        print(direction);
         newBullet.GetComponent<Rigidbody2D>().velocity = direction * bulletVelocity;
     }
 }
