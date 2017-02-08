@@ -35,6 +35,9 @@ public class CameraMovement : MonoBehaviour
 
     private void SetTargetPosition(Vector2 position, int touchId)
     {
-        targetPosition = Vector2.Lerp(player.position, Camera.main.ScreenToWorldPoint(position), 0.3f);
+        if (player != null)
+        {
+            targetPosition = Vector2.Lerp(player.position, Camera.main.ScreenToWorldPoint(position), 0.3f);
+        }
     }
 }
