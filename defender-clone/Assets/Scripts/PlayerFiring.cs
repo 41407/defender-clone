@@ -9,6 +9,7 @@ public class PlayerFiring : MonoBehaviour
     private PlayerController playerController;
     public float rateOfFire = 0.16f;
     public float bulletSpawnOffset = 1;
+    public float accuracy = 0.05f;
 
     void Awake()
     {
@@ -38,6 +39,7 @@ public class PlayerFiring : MonoBehaviour
 
     public void Fire(Vector2 direction)
     {
+        direction += Random.insideUnitCircle * accuracy;
         GameObject newBullet = Factory.create.ByReference(bulletPrefab, transform.position + (Vector3)direction * bulletSpawnOffset, Quaternion.identity);
         newBullet.GetComponent<Rigidbody2D>().velocity = direction * bulletVelocity;
     }
