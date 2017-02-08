@@ -9,15 +9,19 @@ public class GameController : MonoBehaviour
     public GameObject player;
     public GameObject playerPrefab;
     public int lives = 3;
+    private WaveController waveController;
+    public int difficulty = 5;
 
     void Awake()
     {
         cam = Camera.main;
+        waveController = GetComponent<WaveController>();
     }
 
     void OnEnable()
     {
         StartCoroutine(CoreCo());
+        StartCoroutine(WaveCo());
     }
 
     private IEnumerator CoreCo()
@@ -33,5 +37,22 @@ public class GameController : MonoBehaviour
             lives--;
         }
         print("Game over!");
+    }
+
+    private IEnumerator WaveCo()
+    {
+        while (true)
+        {
+            if (waveController.waveInProgress)
+            {
+                yield return null;
+            }
+            else
+            {
+                waveController.StartNewWave(difficulty);
+                difficulty++;
+                yield return null;
+            }
+        }
     }
 }
