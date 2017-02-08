@@ -9,11 +9,23 @@ public class EventManager : MonoBehaviour
     public static event InputAction OnButtonUp;
     public static event InputAction OnButtonHold;
     private const int NUMBER_OF_MOUSE_BUTTONS = 5;
+    private RuntimePlatform platform;
+
+    void Awake()
+    {
+        platform = Application.platform;
+    }
 
     void Update()
     {
-        SendMouseEvents();
-        SendTouchEvents();
+        if (platform != RuntimePlatform.IPhonePlayer)
+        {
+            SendMouseEvents();
+        }
+        else
+        {
+            SendTouchEvents();
+        }
     }
 
     private void SendMouseEvents()

@@ -7,6 +7,8 @@ public class CameraMovement : MonoBehaviour
     private Camera cam;
     private Transform player;
     private Vector2 targetPosition;
+    private bool holding = false;
+    private int mainTouchId;
 
     void Awake()
     {
@@ -15,7 +17,9 @@ public class CameraMovement : MonoBehaviour
 
     void OnEnable()
     {
+        EventManager.OnButtonDown += AssignMainTouch;
         EventManager.OnButtonHold += SetTargetPosition;
+        EventManager.OnButtonUp += ReleaseTouch;
     }
 
     void Update()
@@ -38,11 +42,36 @@ public class CameraMovement : MonoBehaviour
         }
     }
 
+    private void AssignMainTouch(Vector2 position, int touchId)
+    {
+        if (!holding)
+        {
+            holding = true;
+            mainTouchId = touchId;
+        }
+    }
+
+    private void ReleaseTouch(Vector2 position, int touchId)
+    {
+        if (touchId == mainTouchId)
+        {
+            holding = false;
+        }
+    }
+
     private void SetTargetPosition(Vector2 position, int touchId)
     {
         if (player != null)
         {
-            targetPosition = Vector2.Lerp(player.position, cam.ScreenToWorldPoint(position), 0.3f);
+            if (touchId == mainTouchId)
+            {
+                targetPosition = Vector2.Lerp(player.position, cam.ScreenToWorldPoint(position), 0.3f);
+            }
+            else if (!holding)
+            {
+                holding = true;
+                mainTouchId = touchId;
+            }
         }
     }
 }

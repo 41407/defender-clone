@@ -10,6 +10,7 @@ public class MenuController : MonoBehaviour
 
     void Start()
     {
+        Application.targetFrameRate = 60;
         StartCoroutine(EnableChildren());
         sceneLoadOperation = SceneManager.LoadSceneAsync("Game");
         sceneLoadOperation.allowSceneActivation = false;
