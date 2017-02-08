@@ -9,7 +9,7 @@ public class CameraMovement : MonoBehaviour
 
     void Awake()
     {
-        player = Component.FindObjectOfType<PlayerMovement>().transform;
+        player = Component.FindObjectOfType<PlayerController>().transform;
     }
 
     void OnEnable()

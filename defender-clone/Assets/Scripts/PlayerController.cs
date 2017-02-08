@@ -2,16 +2,17 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerMovement : MonoBehaviour
+public class PlayerController : MonoBehaviour
 {
-    private bool moving = false;
-    private bool firing = false;
+    public bool moving = false;
+    public bool firing = false;
     private int movingTouchId = -1;
     private int firingTouchId = -1;
     private Vector2 targetPosition;
     public float maxVelocity = 10;
     public float firingVelocityModifier = 0.4f;
     private SpriteRenderer sprite;
+    public Vector2 direction;
 
     void Awake()
     {
@@ -34,7 +35,16 @@ public class PlayerMovement : MonoBehaviour
     private void TranslateX()
     {
         float clampTranslate = firing ? maxVelocity * firingVelocityModifier : maxVelocity;
-        sprite.flipX = targetPosition.x < transform.position.x;
+        if (targetPosition.x < transform.position.x)
+        {
+            direction = Vector2.left;
+            sprite.flipX = true;
+        }
+        else
+        {
+            direction = Vector2.right;
+            sprite.flipX = false;
+        }
         transform.Translate(Vector2.ClampMagnitude(new Vector2(targetPosition.x - transform.position.x, 0), clampTranslate) * Time.deltaTime);
     }
 
