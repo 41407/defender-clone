@@ -36,7 +36,7 @@ public class PlayerController : MonoBehaviour
     {
         if (coll.collider.gameObject.layer == LayerMask.NameToLayer("Enemy") || coll.collider.gameObject.layer == LayerMask.NameToLayer("Enemy Bullet"))
         {
-            gameObject.SetActive(false);
+            Destroy(gameObject);
         }
     }
 

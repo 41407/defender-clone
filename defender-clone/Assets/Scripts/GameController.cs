@@ -31,7 +31,7 @@ public class GameController : MonoBehaviour
         {
             yield return new WaitForSeconds(1);
             player = Instantiate(playerPrefab, (Vector2)cam.transform.position, Quaternion.identity);
-            while (player.activeInHierarchy)
+            while (player != null)
             {
                 yield return null;
             }
