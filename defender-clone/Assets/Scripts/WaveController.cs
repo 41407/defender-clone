@@ -31,7 +31,6 @@ public class WaveController : MonoBehaviour
 
     public GameObject GetEnemyPrefab()
     {
-        int enemyIndex = Random.Range(0, enemyPrefabs.Length);
         var availableEnemies = from enemy in enemyPrefabs
                                where enemy.appearsAfterWave <= wave
                                select enemy.enemyPrefab;
