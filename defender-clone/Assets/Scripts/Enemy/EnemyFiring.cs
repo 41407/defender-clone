@@ -14,7 +14,6 @@ public class EnemyFiring : MonoBehaviour
     {
         if (!onCooldown)
         {
-            print(gameObject.name + " firing a burst!");
             StartCoroutine(FireCo(direction, count));
         }
     }
