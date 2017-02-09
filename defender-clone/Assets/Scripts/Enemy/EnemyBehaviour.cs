@@ -24,18 +24,19 @@ public class EnemyBehaviour : MonoBehaviour
 
     void OnEnable()
     {
+        speed = Mathf.Clamp(gameController.difficulty / 8, 3, 6);
         astronaut = null;
         hasAttemptedAbduction = false;
         switch (enemyBehaviourType)
         {
             case EnemyBehaviourType.follower:
-                StartCoroutine(MoveTowardsPlayer());
+                StartCoroutine(FollowerBehaviour());
                 break;
             case EnemyBehaviourType.shooter:
-                StartCoroutine(LurkAroundPlayer());
+                StartCoroutine(ShooterBehaviour());
                 break;
             default:
-                StartCoroutine(MoveTowardsPlayer());
+                StartCoroutine(FollowerBehaviour());
                 break;
         }
     }
@@ -50,7 +51,7 @@ public class EnemyBehaviour : MonoBehaviour
         }
     }
 
-    private IEnumerator MoveTowardsPlayer()
+    private IEnumerator FollowerBehaviour()
     {
         while (true)
         {
@@ -71,7 +72,7 @@ public class EnemyBehaviour : MonoBehaviour
     }
 
 
-    private IEnumerator LurkAroundPlayer()
+    private IEnumerator ShooterBehaviour()
     {
         while (true)
         {
@@ -88,7 +89,7 @@ public class EnemyBehaviour : MonoBehaviour
                 else
                 {
                     transform.Translate(new Vector2(transform.position.x - player.position.x, 0).normalized * speed * Time.deltaTime);
-                    GetComponent<EnemyFiring>().FireBurst(player.position - transform.position, Mathf.Clamp(gameController.difficulty / 10, 3, 10));
+                    GetComponent<EnemyFiring>().FireBurst(player.position - transform.position, Mathf.Clamp(gameController.difficulty / 5, 3, 10));
                 }
                 if (!hasAttemptedAbduction)
                 {
