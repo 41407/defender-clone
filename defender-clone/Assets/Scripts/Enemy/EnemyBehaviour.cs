@@ -88,7 +88,11 @@ public class EnemyBehaviour : MonoBehaviour
                 }
                 else
                 {
-                    transform.Translate(new Vector2(transform.position.x - player.position.x, 0).normalized * speed * Time.deltaTime);
+                    if (gameController.difficulty > 20)
+                    {
+                        yield return StartCoroutine(MoveAlongYForDuration(1));
+                    }
+                    //transform.Translate(new Vector2(transform.position.x - player.position.x, 0).normalized * speed * Time.deltaTime);
                     GetComponent<EnemyFiring>().FireBurst(player.position - transform.position, Mathf.Clamp(gameController.difficulty / 5, 3, 10));
                 }
                 if (!hasAttemptedAbduction)
@@ -96,6 +100,20 @@ public class EnemyBehaviour : MonoBehaviour
                     yield return AttemptAbduction();
                 }
             }
+            yield return null;
+        }
+    }
+
+    private IEnumerator MoveAlongYForDuration(float duration)
+    {
+        Vector2 translation = new Vector2(0, Random.Range(-speed, speed));
+        for (float time = 0; time < duration; time += Time.deltaTime)
+        {
+            if (transform.position.y > 4)
+            {
+                translation = new Vector2(0, -translation.y);
+            }
+            transform.Translate(translation * Time.deltaTime);
             yield return null;
         }
     }
