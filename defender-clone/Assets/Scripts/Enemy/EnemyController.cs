@@ -4,10 +4,15 @@ using UnityEngine;
 
 public class EnemyController : MonoBehaviour
 {
+    private EnemySpriteController spriteController;
     public GameObject[] explosionPrefabs;
     public int scoreOnDestroy = 50;
     public int maxHealth = 1;
     private int health = 1;
+    void Awake()
+    {
+        spriteController = GetComponentInChildren<EnemySpriteController>();
+    }
 
     void OnEnable()
     {
@@ -22,6 +27,10 @@ public class EnemyController : MonoBehaviour
             if (health <= 0)
             {
                 Explode();
+            }
+            else
+            {
+                spriteController.TakeDamage();
             }
         }
     }
