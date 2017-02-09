@@ -4,14 +4,20 @@ using UnityEngine;
 
 public class EnemyController : MonoBehaviour
 {
-    public GameObject explosionParticlePrefab;
+    public GameObject[] explosionPrefabs;
     public int scoreOnDestroy = 50;
 
     void OnCollisionEnter2D(Collision2D coll)
     {
         if (coll.gameObject.layer == LayerMask.NameToLayer("Player Bullet") || coll.gameObject.layer == LayerMask.NameToLayer("Player"))
         {
-            Factory.create.ByReference(explosionParticlePrefab, transform.position, Quaternion.identity);
+            if (explosionPrefabs.Length > 0)
+            {
+                for (int i = 0; i < explosionPrefabs.Length; i++)
+                {
+                    Factory.create.ByReference(explosionPrefabs[i], transform.position, Quaternion.identity);
+                }
+            }
             gameObject.SetActive(false);
             Score.score += scoreOnDestroy;
         }

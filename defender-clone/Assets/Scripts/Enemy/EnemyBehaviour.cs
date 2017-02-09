@@ -9,7 +9,8 @@ public class EnemyBehaviour : MonoBehaviour
     public enum EnemyBehaviourType
     {
         follower,
-        shooter
+        shooter,
+        exploding
     }
     public GameObject astronaut;
     private bool hasAttemptedAbduction = false;
