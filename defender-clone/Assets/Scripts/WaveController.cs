@@ -6,8 +6,10 @@ using UnityEngine;
 public class WaveController : MonoBehaviour
 {
     private GameController gameController;
+    private bool waveInProgress = false;
     public int wave;
-    public bool waveInProgress = false;
+    public GameObject astronautPrefab;
+    public int astronautsPerWave;
     public GameObject enemySpawnerPrefab;
     [System.SerializableAttribute]
     public struct EnemyPrefabs
@@ -16,12 +18,15 @@ public class WaveController : MonoBehaviour
         public int appearsAfterWave;
     }
     public EnemyPrefabs[] enemyPrefabs;
-    public GameObject astronautPrefab;
-    public int astronautsPerWave;
 
     void Awake()
     {
         gameController = GetComponent<GameController>();
+    }
+
+    void OnEnable()
+    {
+        StartCoroutine(SpawnAstronauts());
     }
 
     void Update()
