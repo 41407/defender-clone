@@ -42,6 +42,11 @@ public class EnemyBehaviour : MonoBehaviour
         }
     }
 
+    void OnDisable()
+    {
+        StopAllCoroutines();
+    }
+
 
     private void FindPlayer()
     {
