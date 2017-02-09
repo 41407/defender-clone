@@ -4,12 +4,14 @@ using UnityEngine;
 
 public class AstronautController : MonoBehaviour
 {
+    private GameController gameController;
     private Rigidbody2D body;
     public GameObject abductor;
     public bool beingAbducted = false;
 
     void Awake()
     {
+        gameController = Component.FindObjectOfType<GameController>();
         body = GetComponent<Rigidbody2D>();
     }
 
@@ -34,6 +36,12 @@ public class AstronautController : MonoBehaviour
         while (abductor.activeInHierarchy)
         {
             transform.position = Vector3.Lerp(transform.position, abductor.transform.position, 0.1f);
+            if (transform.position.y > 5)
+            {
+                gameController.AstronautGotAbducted();
+                abductor.SetActive(false);
+                gameObject.SetActive(false);
+            }
             yield return null;
         }
         abductor = null;

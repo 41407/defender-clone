@@ -26,6 +26,21 @@ public class GameController : MonoBehaviour
         StartCoroutine(WaveCo());
     }
 
+    public void AstronautGotAbducted()
+    {
+        int remainingAstronauts = GameObject.FindGameObjectsWithTag("Astronaut").Length;
+        print("Astronauts remaining: " + remainingAstronauts);
+        if (remainingAstronauts <= 0)
+        {
+            OnGameOver();
+        }
+    }
+
+    private void OnGameOver()
+    {
+        SceneManager.LoadScene("Menu");
+    }
+
     private IEnumerator CoreCo()
     {
         while (lives >= 0)
@@ -38,7 +53,7 @@ public class GameController : MonoBehaviour
             }
             lives--;
         }
-        SceneManager.LoadScene("Menu");
+        OnGameOver();
     }
 
     private IEnumerator WaveCo()
