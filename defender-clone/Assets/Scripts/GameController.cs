@@ -11,7 +11,7 @@ public class GameController : MonoBehaviour
     public GameObject playerPrefab;
     public int lives = 3;
     private WaveController waveController;
-    public int difficulty = 5;
+    public int wave = 3;
     public int difficultyIncrementPerWave = 2;
 
     void Awake()
@@ -73,8 +73,8 @@ public class GameController : MonoBehaviour
             }
             else
             {
-                waveController.StartNewWave(difficulty);
-                difficulty += difficultyIncrementPerWave;
+                waveController.StartNewWave(wave);
+                wave++;
                 yield return null;
             }
         }

@@ -26,10 +26,10 @@ public class WaveController : MonoBehaviour
         return enemyPrefabs[Random.Range(0, enemyPrefabs.Length)];
     }
 
-    private IEnumerator StartWave(int difficulty)
+    private IEnumerator StartWave(int wave)
     {
         yield return new WaitForSeconds(1);
-        if (difficulty % 5 == 0 && GameObject.FindGameObjectsWithTag("Astronaut").Length < 4)
+        if (wave % 5 == 0 && GameObject.FindGameObjectsWithTag("Astronaut").Length < 4)
         {
             for (int i = 0; i < 5; i++)
             {
@@ -38,7 +38,7 @@ public class WaveController : MonoBehaviour
             }
         }
         yield return new WaitForSeconds(1);
-        for (int i = 0; i < difficulty; i++)
+        for (int i = 0; i < 3 + wave * 2; i++)
         {
             Factory.create.ByReference(enemySpawnerPrefab, new Vector2(Random.Range(0, gameController.levelWidth), Random.Range(-2, 4)), Quaternion.identity, transform);
             yield return new WaitForSeconds(Random.Range(0.0f, 0.2f));

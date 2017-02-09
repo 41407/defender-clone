@@ -25,7 +25,7 @@ public class EnemyBehaviour : MonoBehaviour
 
     void OnEnable()
     {
-        speed = Mathf.Clamp(gameController.difficulty / 8, 3, 6);
+        speed = Mathf.Clamp(gameController.wave / 8, 3, 6);
         astronaut = null;
         hasAttemptedAbduction = false;
         switch (enemyBehaviourType)
@@ -100,11 +100,11 @@ public class EnemyBehaviour : MonoBehaviour
                 }
                 else
                 {
-                    if (gameController.difficulty > 20)
+                    GetComponent<EnemyFiring>().FireBurst(playerPosition - transform.position, Mathf.Clamp(gameController.wave / 5, 3, 10));
+                    if (gameController.wave > 6)
                     {
                         yield return StartCoroutine(MoveAlongYForDuration(1));
                     }
-                    GetComponent<EnemyFiring>().FireBurst(playerPosition - transform.position, Mathf.Clamp(gameController.difficulty / 5, 3, 10));
                 }
             }
             yield return null;
