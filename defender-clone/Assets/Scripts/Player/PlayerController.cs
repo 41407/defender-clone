@@ -5,6 +5,7 @@ using UnityEngine;
 public class PlayerController : MonoBehaviour
 {
     private Rigidbody2D body;
+    private PlayerSpriteController playerSpriteController;
     public bool moving = false;
     public bool firing = false;
     private int movingTouchId = -1;
@@ -19,6 +20,7 @@ public class PlayerController : MonoBehaviour
 
     void Awake()
     {
+        playerSpriteController = GetComponentInChildren<PlayerSpriteController>();
         sprite = transform.GetComponentInChildren<SpriteRenderer>();
         body = GetComponent<Rigidbody2D>();
     }
@@ -126,15 +128,9 @@ public class PlayerController : MonoBehaviour
     private IEnumerator SetSpawnInvulnerability()
     {
         invulnerable = true;
-        int frame = 0;
-        Color[] colors = { Color.black, Color.black, Color.white, Color.white };
-        for (float time = 0; time < 2; time += Time.deltaTime)
-        {
-            frame++;
-            sprite.color = colors[frame % colors.Length];
-            yield return null;
-        }
-        sprite.color = Color.white;
+        playerSpriteController.Blinking = true;
+        yield return new WaitForSeconds(2);
+        playerSpriteController.Blinking = false;
         invulnerable = false;
     }
 }
