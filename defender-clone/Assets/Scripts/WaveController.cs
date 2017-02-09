@@ -29,25 +29,19 @@ public class WaveController : MonoBehaviour
     private IEnumerator StartWave(int difficulty)
     {
         yield return new WaitForSeconds(1);
-        float levelWidth = gameController.levelWidth;
-        float step = levelWidth / 5f;
-        Vector2 newSpawnerPosition = Vector2.zero;
         if (difficulty % 5 == 0 && GameObject.FindGameObjectsWithTag("Astronaut").Length < 4)
         {
             for (int i = 0; i < 5; i++)
             {
-                Factory.create.ByReference(astronautPrefab, newSpawnerPosition, Quaternion.identity);
-                newSpawnerPosition += new Vector2(i * step, 0);
+                Factory.create.ByReference(astronautPrefab, new Vector2(Random.Range(0, gameController.levelWidth), 0), Quaternion.identity);
                 yield return null;
             }
         }
         yield return new WaitForSeconds(1);
-        step = levelWidth / (Mathf.Max(1, (float)difficulty));
         for (int i = 0; i < difficulty; i++)
         {
-            Factory.create.ByReference(enemySpawnerPrefab, newSpawnerPosition + Vector2.up * Random.Range(0, 4), Quaternion.identity, transform);
-            newSpawnerPosition += new Vector2(Random.Range(-step * 0.5f, 2 * step), 0);
-            yield return new WaitForSeconds(Random.Range(0.1f, 1.1f));
+            Factory.create.ByReference(enemySpawnerPrefab, new Vector2(Random.Range(0, gameController.levelWidth), Random.Range(-2, 4)), Quaternion.identity, transform);
+            yield return new WaitForSeconds(Random.Range(0.0f, 0.2f));
         }
 
         while (GetNumberOfAliveEnemies() > 2)
