@@ -148,15 +148,18 @@ public class EnemyBehaviour : MonoBehaviour
         {
             hasAttemptedAbduction = true;
             astronaut = FindClosestAstronaut(transform.position);
-            AstronautController ac = astronaut.GetComponent<AstronautController>();
-            if (!ac.beingAbducted && Vector2.Distance(transform.position, astronaut.transform.position) < 20)
+            if (astronaut != null)
             {
-                ac.beingAbducted = true;
-                yield return Abduct();
-            }
-            else
-            {
-                yield return null;
+                AstronautController ac = astronaut.GetComponent<AstronautController>();
+                if (!ac.beingAbducted && Vector2.Distance(transform.position, astronaut.transform.position) < 20)
+                {
+                    ac.beingAbducted = true;
+                    yield return Abduct();
+                }
+                else
+                {
+                    yield return null;
+                }
             }
         }
     }
@@ -179,6 +182,13 @@ public class EnemyBehaviour : MonoBehaviour
     private GameObject FindClosestAstronaut(Vector2 position)
     {
         GameObject[] astronauts = GameObject.FindGameObjectsWithTag("Astronaut");
-        return astronauts.First(closest => Vector2.Distance(position, closest.transform.position) == (astronauts.Min(astronaut => Vector2.Distance(position, astronaut.transform.position))));
+        if (astronauts.Length > 0)
+        {
+            return astronauts.First(closest => Vector2.Distance(position, closest.transform.position) == (astronauts.Min(astronaut => Vector2.Distance(position, astronaut.transform.position))));
+        }
+        else
+        {
+            return null;
+        }
     }
 }
