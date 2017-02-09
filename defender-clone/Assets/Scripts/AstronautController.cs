@@ -36,6 +36,7 @@ public class AstronautController : MonoBehaviour
         body.isKinematic = true;
         while (abductor.activeInHierarchy)
         {
+            transform.position = new Vector2(abductor.transform.position.x, transform.position.y);
             transform.position = Vector3.Lerp(transform.position, abductor.transform.position, 0.1f);
             if (transform.position.y > 5)
             {
