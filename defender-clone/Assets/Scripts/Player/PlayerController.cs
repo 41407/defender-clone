@@ -126,7 +126,15 @@ public class PlayerController : MonoBehaviour
     private IEnumerator SetSpawnInvulnerability()
     {
         invulnerable = true;
-        yield return new WaitForSeconds(2f);
+        int frame = 0;
+        Color[] colors = { Color.black, Color.black, Color.white, Color.white };
+        for (float time = 0; time < 2; time += Time.deltaTime)
+        {
+            frame++;
+            sprite.color = colors[frame % colors.Length];
+            yield return null;
+        }
+        sprite.color = Color.white;
         invulnerable = false;
     }
 }
