@@ -109,7 +109,6 @@ public class EnemyBehaviour : MonoBehaviour
         }
     }
 
-
     private IEnumerator ShooterBehaviour()
     {
         EnemyFiring firing = GetComponent<EnemyFiring>();
