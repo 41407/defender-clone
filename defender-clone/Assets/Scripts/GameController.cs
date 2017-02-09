@@ -5,6 +5,7 @@ using UnityEngine.SceneManagement;
 
 public class GameController : MonoBehaviour
 {
+    private HUDMessageViewerController messageViewer;
     public Camera cam;
     public float levelWidth = 70;
     public GameObject player;
@@ -16,6 +17,7 @@ public class GameController : MonoBehaviour
     {
         Score.score = 0;
         cam = Camera.main;
+        messageViewer = Component.FindObjectOfType<HUDMessageViewerController>();
     }
 
     void OnEnable()
@@ -25,11 +27,16 @@ public class GameController : MonoBehaviour
 
     public void AstronautGotAbducted()
     {
-        int remainingAstronauts = GameObject.FindGameObjectsWithTag("Astronaut").Length;
-        print("Astronauts remaining: " + remainingAstronauts);
+        int remainingAstronauts = GameObject.FindGameObjectsWithTag("Astronaut").Length - 1;
+        string plural = remainingAstronauts == 1 ? "" : "s";
         if (remainingAstronauts <= 0)
         {
+            messageViewer.Message = "All the astronauts have been abducted!";
             OnGameOver();
+        }
+        else
+        {
+            messageViewer.Message = remainingAstronauts + " astronaut" + plural + " remaining.";
         }
     }
 
@@ -40,7 +47,7 @@ public class GameController : MonoBehaviour
 
     private IEnumerator GameOverCo()
     {
-        yield return new WaitForSeconds(2);
+        yield return new WaitForSeconds(4);
         SceneManager.LoadScene("Menu");
     }
 
