@@ -67,11 +67,12 @@ public class EnemyBehaviour : MonoBehaviour
             }
             else
             {
-                transform.Translate((player.position - transform.position).normalized * speed * Time.deltaTime);
+                Vector3 playerPosition = player.position;
                 if (!hasAttemptedAbduction)
                 {
                     yield return AttemptAbduction();
                 }
+                transform.Translate((playerPosition - transform.position).normalized * speed * Time.deltaTime);
             }
             yield return null;
         }
@@ -88,9 +89,14 @@ public class EnemyBehaviour : MonoBehaviour
             }
             else
             {
-                if (Vector2.Distance(player.position, transform.position) > 5)
+                Vector3 playerPosition = player.position;
+                if (!hasAttemptedAbduction)
                 {
-                    transform.Translate((player.position - transform.position).normalized * speed * Time.deltaTime);
+                    yield return AttemptAbduction();
+                }
+                if (Vector2.Distance(playerPosition, transform.position) > 5)
+                {
+                    transform.Translate((playerPosition - transform.position).normalized * speed * Time.deltaTime);
                 }
                 else
                 {
@@ -98,12 +104,7 @@ public class EnemyBehaviour : MonoBehaviour
                     {
                         yield return StartCoroutine(MoveAlongYForDuration(1));
                     }
-                    //transform.Translate(new Vector2(transform.position.x - player.position.x, 0).normalized * speed * Time.deltaTime);
-                    GetComponent<EnemyFiring>().FireBurst(player.position - transform.position, Mathf.Clamp(gameController.difficulty / 5, 3, 10));
-                }
-                if (!hasAttemptedAbduction)
-                {
-                    yield return AttemptAbduction();
+                    GetComponent<EnemyFiring>().FireBurst(playerPosition - transform.position, Mathf.Clamp(gameController.difficulty / 5, 3, 10));
                 }
             }
             yield return null;
