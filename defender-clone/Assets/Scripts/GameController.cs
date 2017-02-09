@@ -16,6 +16,7 @@ public class GameController : MonoBehaviour
 
     void Awake()
     {
+        Score.score = 0;
         cam = Camera.main;
         waveController = GetComponent<WaveController>();
     }
@@ -38,6 +39,12 @@ public class GameController : MonoBehaviour
 
     private void OnGameOver()
     {
+        StartCoroutine(GameOverCo());
+    }
+
+    private IEnumerator GameOverCo()
+    {
+        yield return new WaitForSeconds(2);
         SceneManager.LoadScene("Menu");
     }
 
