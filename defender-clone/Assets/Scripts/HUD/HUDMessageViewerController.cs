@@ -8,7 +8,6 @@ public class HUDMessageViewerController : MonoBehaviour
     public Vector3 displayPosition = Vector3.zero;
     public float messageDuration = 2;
     private TextMesh text;
-    private bool displayingMessage = false;
     private string message;
     public string Message
     {
