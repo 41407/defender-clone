@@ -27,6 +27,7 @@ public class WaveController : MonoBehaviour
     {
         waveInProgress = true;
         StartCoroutine(StartWave(wave));
+        StartCoroutine(SpawnRandomExtraEnemy());
     }
 
     public GameObject GetEnemyPrefab()
@@ -56,11 +57,21 @@ public class WaveController : MonoBehaviour
             yield return new WaitForSeconds(Random.Range(0.0f, 0.2f));
         }
 
-        while (GetNumberOfAliveEnemies() > 2)
+        while (GetNumberOfAliveEnemies() > 3)
         {
             yield return new WaitForSeconds(0.5f);
         }
         waveInProgress = false;
+    }
+
+    private IEnumerator SpawnRandomExtraEnemy()
+    {
+        while (true)
+        {
+            yield return new WaitForSeconds(Random.Range(8, 12));
+            print("Random enemy spawned.");
+            Factory.create.ByReference(enemySpawnerPrefab, new Vector2(Random.Range(0, gameController.levelWidth), Random.Range(-2, 4)), Quaternion.identity, transform);
+        }
     }
 
     private int GetNumberOfAliveEnemies()
