@@ -20,6 +20,10 @@ public class HighScoreController : MonoBehaviour
         {
             text.text = "";
         }
+        else if (currentScore == 0 && highScore > 0)
+        {
+            text.text = "High score is " + highScore + ".";
+        }
         else if (highScore > currentScore)
         {
             text.text = "Your final score was " + currentScore + ".\nHigh score is " + highScore + ".";
