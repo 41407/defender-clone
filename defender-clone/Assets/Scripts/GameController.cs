@@ -11,7 +11,6 @@ public class GameController : MonoBehaviour
     public GameObject playerSpawnParticlePrefab;
     public GameObject playerPrefab;
     public int lives = 3;
-    public int difficultyIncrementPerWave = 2;
 
     void Awake()
     {
