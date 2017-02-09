@@ -10,7 +10,8 @@ public class EnemyBehaviour : MonoBehaviour
     {
         follower,
         shooter,
-        exploding
+        exploding,
+        mineLaying
     }
     public GameObject astronaut;
     private bool hasAttemptedAbduction = false;
@@ -35,6 +36,10 @@ public class EnemyBehaviour : MonoBehaviour
                 break;
             case EnemyBehaviourType.shooter:
                 StartCoroutine(ShooterBehaviour());
+                break;
+                break;
+            case EnemyBehaviourType.mineLaying:
+                StartCoroutine(MineLayingBehaviour());
                 break;
             default:
                 StartCoroutine(FollowerBehaviour());
@@ -74,6 +79,18 @@ public class EnemyBehaviour : MonoBehaviour
                 }
                 transform.Translate((playerPosition - transform.position).normalized * speed * Time.deltaTime);
             }
+            yield return null;
+        }
+    }
+
+    private IEnumerator MineLayingBehaviour()
+    {
+        Vector2 direction = new Vector2(Random.Range(-1, 1), 0).normalized;
+        EnemyFiring firing = GetComponent<EnemyFiring>();
+        while (true)
+        {
+            transform.Translate(direction * speed * Time.deltaTime);
+            firing.FireBurst(new Vector2(0, Random.Range(-1, 1)), 1);
             yield return null;
         }
     }

@@ -7,6 +7,7 @@ public class EnemyFiring : MonoBehaviour
     public GameObject bulletPrefab;
     public float bulletVelocity;
     private bool onCooldown = false;
+    public float firingCooldown = 2;
     public float accuracy = 0.05f;
 
     public void FireBurst(Vector2 direction, int count)
@@ -25,7 +26,7 @@ public class EnemyFiring : MonoBehaviour
             Fire(direction);
             yield return new WaitForSeconds(0.2f);
         }
-        yield return new WaitForSeconds(2);
+        yield return new WaitForSeconds(firingCooldown);
         onCooldown = false;
     }
 
