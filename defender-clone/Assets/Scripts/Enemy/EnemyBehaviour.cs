@@ -185,7 +185,7 @@ public class EnemyBehaviour : MonoBehaviour
         {
             if (astronaut.GetComponent<AstronautController>().abductor == gameObject)
             {
-                transform.Translate(Vector2.up * 1.5f * Time.deltaTime);
+                transform.Translate(Vector2.up * 1f * Time.deltaTime);
             }
             else
             {
