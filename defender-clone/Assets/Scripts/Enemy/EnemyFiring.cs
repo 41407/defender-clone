@@ -7,6 +7,7 @@ public class EnemyFiring : MonoBehaviour
     public GameObject bulletPrefab;
     public float bulletVelocity;
     private bool onCooldown = false;
+    public float accuracy = 0.05f;
 
     public void FireBurst(Vector2 direction, int count)
     {
@@ -30,6 +31,7 @@ public class EnemyFiring : MonoBehaviour
 
     private void Fire(Vector2 direction)
     {
+        direction += Random.insideUnitCircle * accuracy;
         GameObject newBullet = Factory.create.ByReference(bulletPrefab, transform.position, Quaternion.identity);
         newBullet.GetComponent<Rigidbody2D>().velocity = direction * bulletVelocity;
     }
