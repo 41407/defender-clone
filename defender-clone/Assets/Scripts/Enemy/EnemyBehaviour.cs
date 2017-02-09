@@ -6,14 +6,15 @@ using System.Linq;
 public class EnemyBehaviour : MonoBehaviour
 {
     private GameController gameController;
-    public enum EnemyType
+    public enum EnemyBehaviourType
     {
         follower,
-        shooter
+        shooter,
+        abductor
     }
     public GameObject astronaut;
     private bool hasAttemptedAbduction = false;
-    public EnemyType enemyType;
+    public EnemyBehaviourType enemyBehaviourType;
     private Transform player;
     public float speed = 3;
 
@@ -34,24 +35,42 @@ public class EnemyBehaviour : MonoBehaviour
         {
             FindPlayer();
         }
-        else if (astronaut == null)
+        else if (!hasAttemptedAbduction)
         {
-            switch (enemyType)
+            AttemptAbduction();
+        }
+        else
+        {
+            switch (enemyBehaviourType)
             {
-                case EnemyType.follower:
+                case EnemyBehaviourType.follower:
                     MoveTowardsPlayer();
                     break;
-                case EnemyType.shooter:
+                case EnemyBehaviourType.shooter:
                     LurkAroundPlayer();
+                    break;
+                case EnemyBehaviourType.abductor:
+                    Abduct();
                     break;
                 default:
                     MoveTowardsPlayer();
                     break;
             }
         }
-        else
+    }
+
+    private void AttemptAbduction()
+    {
+        hasAttemptedAbduction = true;
+        if (Vector2.Distance(player.position, transform.position) > 20)
         {
-            Abduct();
+            astronaut = FindClosestAstronaut(transform.position);
+            AstronautController ac = astronaut.GetComponent<AstronautController>();
+            if (!ac.beingAbducted && Vector2.Distance(transform.position, astronaut.transform.position) < 20)
+            {
+                enemyBehaviourType = EnemyBehaviourType.abductor;
+                ac.beingAbducted = true;
+            }
         }
     }
 
@@ -66,31 +85,14 @@ public class EnemyBehaviour : MonoBehaviour
 
     private void MoveTowardsPlayer()
     {
-        if (Vector2.Distance(player.position, transform.position) > 20 && !hasAttemptedAbduction)
-        {
-            hasAttemptedAbduction = true;
-            astronaut = FindClosestAstronaut(transform.position);
-            AstronautController ac = astronaut.GetComponent<AstronautController>();
-            if (ac.beingAbducted)
-            {
-                astronaut = null;
-            }
-            else
-            {
-                ac.beingAbducted = true;
-            }
-        }
-        else
-        {
-            transform.Translate((player.position - transform.position).normalized * speed * Time.deltaTime);
-        }
+        transform.Translate((player.position - transform.position).normalized * speed * Time.deltaTime);
     }
 
     private void Abduct()
     {
-        if (astronaut.GetComponent<AstronautController>().abductor == transform)
+        if (astronaut.GetComponent<AstronautController>().abductor == gameObject)
         {
-            transform.Translate(Vector2.up * 1 * Time.deltaTime);
+            transform.Translate(Vector2.up * 1.5f * Time.deltaTime);
         }
         else
         {
