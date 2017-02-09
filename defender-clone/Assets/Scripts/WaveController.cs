@@ -67,7 +67,6 @@ public class WaveController : MonoBehaviour
                 number++;
             }
         }
-        print("Active enemies: " + number);
         return number;
     }
 }

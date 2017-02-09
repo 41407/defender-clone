@@ -32,7 +32,7 @@ public class CameraMovement : MonoBehaviour
             }
             catch (System.NullReferenceException)
             {
-                print("Camera could not find player.");
+                // wait
             }
         }
         else

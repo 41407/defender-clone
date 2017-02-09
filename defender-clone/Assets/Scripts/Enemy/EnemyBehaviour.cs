@@ -9,8 +9,7 @@ public class EnemyBehaviour : MonoBehaviour
     public enum EnemyBehaviourType
     {
         follower,
-        shooter,
-        abductor
+        shooter
     }
     public GameObject astronaut;
     private bool hasAttemptedAbduction = false;
@@ -27,52 +26,20 @@ public class EnemyBehaviour : MonoBehaviour
     {
         astronaut = null;
         hasAttemptedAbduction = false;
-    }
-
-    void Update()
-    {
-        if (player == null)
+        switch (enemyBehaviourType)
         {
-            FindPlayer();
-        }
-        else if (!hasAttemptedAbduction)
-        {
-            AttemptAbduction();
-        }
-        else
-        {
-            switch (enemyBehaviourType)
-            {
-                case EnemyBehaviourType.follower:
-                    MoveTowardsPlayer();
-                    break;
-                case EnemyBehaviourType.shooter:
-                    LurkAroundPlayer();
-                    break;
-                case EnemyBehaviourType.abductor:
-                    Abduct();
-                    break;
-                default:
-                    MoveTowardsPlayer();
-                    break;
-            }
+            case EnemyBehaviourType.follower:
+                StartCoroutine(MoveTowardsPlayer());
+                break;
+            case EnemyBehaviourType.shooter:
+                StartCoroutine(LurkAroundPlayer());
+                break;
+            default:
+                StartCoroutine(MoveTowardsPlayer());
+                break;
         }
     }
 
-    private void AttemptAbduction()
-    {
-        hasAttemptedAbduction = true;
-        if (Vector2.Distance(player.position, transform.position) > 20)
-        {
-            astronaut = FindClosestAstronaut(transform.position);
-            AstronautController ac = astronaut.GetComponent<AstronautController>();
-            if (!ac.beingAbducted && Vector2.Distance(transform.position, astronaut.transform.position) < 20)
-            {
-                enemyBehaviourType = EnemyBehaviourType.abductor;
-                ac.beingAbducted = true;
-            }
-        }
-    }
 
     private void FindPlayer()
     {
@@ -83,36 +50,89 @@ public class EnemyBehaviour : MonoBehaviour
         }
     }
 
-    private void MoveTowardsPlayer()
+    private IEnumerator MoveTowardsPlayer()
     {
-        transform.Translate((player.position - transform.position).normalized * speed * Time.deltaTime);
-    }
-
-    private void Abduct()
-    {
-        if (astronaut.GetComponent<AstronautController>().abductor == gameObject)
+        while (true)
         {
-            transform.Translate(Vector2.up * 1.5f * Time.deltaTime);
-        }
-        else
-        {
-            transform.Translate((astronaut.transform.position - transform.position).normalized * speed * Time.deltaTime);
-        }
-    }
-
-    private void LurkAroundPlayer()
-    {
-        if (Vector2.Distance(player.position, transform.position) > 5)
-        {
-            transform.Translate((player.position - transform.position).normalized * speed * Time.deltaTime);
-        }
-        else
-        {
-            transform.Translate(new Vector2(transform.position.x - player.position.x, 0).normalized * speed * Time.deltaTime);
-            GetComponent<EnemyFiring>().FireBurst(player.position - transform.position, Mathf.Clamp(gameController.difficulty / 10, 3, 10));
+            if (player == null)
+            {
+                FindPlayer();
+            }
+            else
+            {
+                transform.Translate((player.position - transform.position).normalized * speed * Time.deltaTime);
+                if (!hasAttemptedAbduction)
+                {
+                    yield return AttemptAbduction();
+                }
+            }
+            yield return null;
         }
     }
 
+
+    private IEnumerator LurkAroundPlayer()
+    {
+        while (true)
+        {
+            if (player == null)
+            {
+                FindPlayer();
+            }
+            else
+            {
+                if (Vector2.Distance(player.position, transform.position) > 5)
+                {
+                    transform.Translate((player.position - transform.position).normalized * speed * Time.deltaTime);
+                }
+                else
+                {
+                    transform.Translate(new Vector2(transform.position.x - player.position.x, 0).normalized * speed * Time.deltaTime);
+                    GetComponent<EnemyFiring>().FireBurst(player.position - transform.position, Mathf.Clamp(gameController.difficulty / 10, 3, 10));
+                }
+                if (!hasAttemptedAbduction)
+                {
+                    yield return AttemptAbduction();
+                }
+            }
+            yield return null;
+        }
+    }
+
+    private IEnumerator AttemptAbduction()
+    {
+        if (Vector2.Distance(player.position, transform.position) > 20)
+        {
+            hasAttemptedAbduction = true;
+            astronaut = FindClosestAstronaut(transform.position);
+            AstronautController ac = astronaut.GetComponent<AstronautController>();
+            if (!ac.beingAbducted && Vector2.Distance(transform.position, astronaut.transform.position) < 20)
+            {
+                ac.beingAbducted = true;
+                yield return Abduct();
+            }
+            else
+            {
+                yield return null;
+            }
+        }
+    }
+
+    private IEnumerator Abduct()
+    {
+        while (astronaut.activeInHierarchy)
+        {
+            if (astronaut.GetComponent<AstronautController>().abductor == gameObject)
+            {
+                transform.Translate(Vector2.up * 1.5f * Time.deltaTime);
+            }
+            else
+            {
+                transform.Translate((astronaut.transform.position - transform.position).normalized * speed * Time.deltaTime);
+            }
+            yield return null;
+        }
+    }
     private GameObject FindClosestAstronaut(Vector2 position)
     {
         GameObject[] astronauts = GameObject.FindGameObjectsWithTag("Astronaut");

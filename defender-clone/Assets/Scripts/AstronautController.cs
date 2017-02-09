@@ -17,6 +17,7 @@ public class AstronautController : MonoBehaviour
 
     void OnEnable()
     {
+        body.isKinematic = false;
         beingAbducted = false;
         abductor = null;
     }
