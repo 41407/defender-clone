@@ -37,7 +37,6 @@ public class EnemyBehaviour : MonoBehaviour
             case EnemyBehaviourType.shooter:
                 StartCoroutine(ShooterBehaviour());
                 break;
-                break;
             case EnemyBehaviourType.mineLaying:
                 StartCoroutine(MineLayingBehaviour());
                 break;
@@ -85,12 +84,27 @@ public class EnemyBehaviour : MonoBehaviour
 
     private IEnumerator MineLayingBehaviour()
     {
-        Vector2 direction = new Vector2(Random.Range(-1, 1), 0).normalized;
+        Vector2 direction = Random.value > 0.5f ? Vector2.right : Vector2.left;
         EnemyFiring firing = GetComponent<EnemyFiring>();
+        float timeSinceMine = 0;
         while (true)
         {
+            timeSinceMine += Time.deltaTime;
             transform.Translate(direction * speed * Time.deltaTime);
-            firing.FireBurst(new Vector2(0, Random.Range(-1, 1)), 1);
+            if (timeSinceMine > 1)
+            {
+                direction.y = Random.Range(-0.5f, 0.5f);
+                firing.FireBurst(Vector2.zero, 1);
+                timeSinceMine = 0;
+            }
+            if (transform.position.y > 4)
+            {
+                direction.y = -1;
+            }
+            else if (transform.position.y < -4)
+            {
+                direction.y = 1;
+            }
             yield return null;
         }
     }
@@ -98,6 +112,7 @@ public class EnemyBehaviour : MonoBehaviour
 
     private IEnumerator ShooterBehaviour()
     {
+        EnemyFiring firing = GetComponent<EnemyFiring>();
         while (true)
         {
             if (player == null)
@@ -117,7 +132,7 @@ public class EnemyBehaviour : MonoBehaviour
                 }
                 else
                 {
-                    GetComponent<EnemyFiring>().FireBurst(playerPosition - transform.position, Mathf.Clamp(gameController.wave / 5, 3, 10));
+                    firing.FireBurst(playerPosition - transform.position, Mathf.Clamp(gameController.wave / 5, 3, 10));
                     if (gameController.wave > 6)
                     {
                         yield return StartCoroutine(MoveAlongYForDuration(1));

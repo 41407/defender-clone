@@ -14,6 +14,7 @@ public class EnemyFiring : MonoBehaviour
     {
         if (!onCooldown)
         {
+            print(gameObject.name + " firing a burst!");
             StartCoroutine(FireCo(direction, count));
         }
     }
@@ -33,7 +34,7 @@ public class EnemyFiring : MonoBehaviour
     private void Fire(Vector2 direction)
     {
         direction += Random.insideUnitCircle * accuracy;
-        GameObject newBullet = Factory.create.ByReference(bulletPrefab, transform.position, Quaternion.identity);
+        GameObject newBullet = Factory.create.ByReference(bulletPrefab, (Vector3)transform.position, Quaternion.identity);
         newBullet.GetComponent<Rigidbody2D>().velocity = direction * bulletVelocity;
     }
 }
