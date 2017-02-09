@@ -1,13 +1,21 @@
 ﻿using System.Collections;
+using System.Linq;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class WaveController : MonoBehaviour
 {
+    private int wave;
     private GameController gameController;
     public bool waveInProgress = false;
     public GameObject enemySpawnerPrefab;
-    public GameObject[] enemyPrefabs;
+    [System.SerializableAttribute]
+    public struct EnemyWaves
+    {
+        public GameObject enemyPrefab;
+        public int appearsAfterWave;
+    }
+    public EnemyWaves[] enemyPrefabs;
     public GameObject astronautPrefab;
 
     void Awake()
@@ -15,19 +23,24 @@ public class WaveController : MonoBehaviour
         gameController = GetComponent<GameController>();
     }
 
-    public void StartNewWave(int difficulty)
+    public void StartNewWave(int wave)
     {
         waveInProgress = true;
-        StartCoroutine(StartWave(difficulty));
+        StartCoroutine(StartWave(wave));
     }
 
     public GameObject GetEnemyPrefab()
     {
-        return enemyPrefabs[Random.Range(0, enemyPrefabs.Length)];
+        int enemyIndex = Random.Range(0, enemyPrefabs.Length);
+        var availableEnemies = from enemy in enemyPrefabs
+                               where enemy.appearsAfterWave <= wave
+                               select enemy.enemyPrefab;
+        return availableEnemies.ElementAt(Random.Range(0, availableEnemies.Count()));
     }
 
     private IEnumerator StartWave(int wave)
     {
+        this.wave = wave;
         yield return new WaitForSeconds(1);
         if (wave % 5 == 0 && GameObject.FindGameObjectsWithTag("Astronaut").Length < 4)
         {
