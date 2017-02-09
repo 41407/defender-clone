@@ -5,7 +5,7 @@ using System.Linq;
 
 public class EnemyBehaviour : MonoBehaviour
 {
-    private GameController gameController;
+    private WaveController waveController;
     public enum EnemyBehaviourType
     {
         follower,
@@ -21,12 +21,12 @@ public class EnemyBehaviour : MonoBehaviour
 
     void Awake()
     {
-        gameController = Component.FindObjectOfType<GameController>();
+        waveController = Component.FindObjectOfType<WaveController>();
     }
 
     void OnEnable()
     {
-        speed = Mathf.Clamp(gameController.wave / 8, 3, 6);
+        speed = Mathf.Clamp(waveController.wave / 8, 3, 6);
         astronaut = null;
         hasAttemptedAbduction = false;
         switch (enemyBehaviourType)
@@ -132,8 +132,8 @@ public class EnemyBehaviour : MonoBehaviour
                 }
                 else
                 {
-                    firing.FireBurst(playerPosition - transform.position, Mathf.Clamp(gameController.wave / 5, 3, 10));
-                    if (gameController.wave > 6)
+                    firing.FireBurst(playerPosition - transform.position, Mathf.Clamp(waveController.wave / 5, 3, 10));
+                    if (waveController.wave > 6)
                     {
                         yield return StartCoroutine(MoveAlongYForDuration(1));
                     }

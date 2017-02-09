@@ -11,21 +11,17 @@ public class GameController : MonoBehaviour
     public GameObject playerSpawnParticlePrefab;
     public GameObject playerPrefab;
     public int lives = 3;
-    private WaveController waveController;
-    public int wave = 3;
     public int difficultyIncrementPerWave = 2;
 
     void Awake()
     {
         Score.score = 0;
         cam = Camera.main;
-        waveController = GetComponent<WaveController>();
     }
 
     void OnEnable()
     {
         StartCoroutine(CoreCo());
-        StartCoroutine(WaveCo());
     }
 
     public void AstronautGotAbducted()
@@ -64,22 +60,5 @@ public class GameController : MonoBehaviour
             yield return new WaitForSeconds(2);
         }
         OnGameOver();
-    }
-
-    private IEnumerator WaveCo()
-    {
-        while (true)
-        {
-            if (waveController.waveInProgress)
-            {
-                yield return null;
-            }
-            else
-            {
-                waveController.StartNewWave(wave);
-                wave++;
-                yield return null;
-            }
-        }
     }
 }

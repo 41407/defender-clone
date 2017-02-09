@@ -5,29 +5,34 @@ using UnityEngine;
 
 public class WaveController : MonoBehaviour
 {
-    private int wave;
     private GameController gameController;
+    public int wave;
     public bool waveInProgress = false;
     public GameObject enemySpawnerPrefab;
     [System.SerializableAttribute]
-    public struct EnemyWaves
+    public struct EnemyPrefabs
     {
         public GameObject enemyPrefab;
         public int appearsAfterWave;
     }
-    public EnemyWaves[] enemyPrefabs;
+    public EnemyPrefabs[] enemyPrefabs;
     public GameObject astronautPrefab;
+    public int astronautsPerWave;
 
     void Awake()
     {
         gameController = GetComponent<GameController>();
     }
 
-    public void StartNewWave(int wave)
+    void Update()
     {
-        waveInProgress = true;
-        StartCoroutine(StartWave(wave));
-        StartCoroutine(SpawnRandomExtraEnemy());
+        if (!waveInProgress)
+        {
+            waveInProgress = true;
+            StartCoroutine(WaveCo());
+            StartCoroutine(SpawnRandomExtraEnemy());
+            wave++;
+        }
     }
 
     public GameObject GetEnemyPrefab()
@@ -38,25 +43,15 @@ public class WaveController : MonoBehaviour
         return availableEnemies.ElementAt(Random.Range(0, availableEnemies.Count()));
     }
 
-    private IEnumerator StartWave(int wave)
+    private IEnumerator WaveCo()
     {
-        this.wave = wave;
         yield return new WaitForSeconds(1);
         if (wave % 5 == 0 && GameObject.FindGameObjectsWithTag("Astronaut").Length < 4)
         {
-            for (int i = 0; i < 5; i++)
-            {
-                Factory.create.ByReference(astronautPrefab, new Vector2(Random.Range(0, gameController.levelWidth), 0), Quaternion.identity);
-                yield return null;
-            }
+            yield return SpawnAstronauts();
         }
         yield return new WaitForSeconds(1);
-        for (int i = 0; i < 3 + wave * 2; i++)
-        {
-            Factory.create.ByReference(enemySpawnerPrefab, new Vector2(Random.Range(0, gameController.levelWidth), Random.Range(-2, 4)), Quaternion.identity, transform);
-            yield return new WaitForSeconds(Random.Range(0.0f, 0.2f));
-        }
-
+        yield return SpawnEnemies();
         while (GetNumberOfAliveEnemies() > 3)
         {
             yield return new WaitForSeconds(0.5f);
@@ -64,14 +59,43 @@ public class WaveController : MonoBehaviour
         waveInProgress = false;
     }
 
+    private IEnumerator SpawnAstronauts()
+    {
+        for (int i = 0; i < astronautsPerWave; i++)
+        {
+            Vector2 spawnPosition;
+            spawnPosition.x = Random.Range(0, gameController.levelWidth);
+            spawnPosition.y = 0;
+            Factory.create.ByReference(astronautPrefab, spawnPosition, Quaternion.identity);
+            yield return null;
+        }
+    }
+
+    private IEnumerator SpawnEnemies()
+    {
+        int count = 3 + wave * 2;
+        for (int i = 0; i < count; i++)
+        {
+            yield return new WaitForSeconds(Random.Range(0.0f, 0.2f));
+            SpawnEnemy();
+        }
+    }
+
     private IEnumerator SpawnRandomExtraEnemy()
     {
         while (true)
         {
             yield return new WaitForSeconds(Random.Range(8, 12));
-            print("Random enemy spawned.");
-            Factory.create.ByReference(enemySpawnerPrefab, new Vector2(Random.Range(0, gameController.levelWidth), Random.Range(-2, 4)), Quaternion.identity, transform);
+            SpawnEnemy();
         }
+    }
+
+    private void SpawnEnemy()
+    {
+        Vector2 spawnPosition;
+        spawnPosition.x = Random.Range(0, gameController.levelWidth);
+        spawnPosition.y = Random.Range(-2, 4);
+        Factory.create.ByReference(enemySpawnerPrefab, new Vector2(Random.Range(0, gameController.levelWidth), Random.Range(-2, 4)), Quaternion.identity, transform);
     }
 
     private int GetNumberOfAliveEnemies()
