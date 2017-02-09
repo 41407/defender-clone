@@ -8,6 +8,7 @@ public class GameController : MonoBehaviour
     public Camera cam;
     public float levelWidth = 70;
     public GameObject player;
+    public GameObject playerSpawnParticlePrefab;
     public GameObject playerPrefab;
     public int lives = 3;
     private WaveController waveController;
@@ -52,13 +53,15 @@ public class GameController : MonoBehaviour
     {
         while (lives >= 0)
         {
-            yield return new WaitForSeconds(1);
+            Factory.create.ByReference(playerSpawnParticlePrefab, (Vector2)cam.transform.position, Quaternion.identity);
+            yield return new WaitForSeconds(2);
             player = Instantiate(playerPrefab, (Vector2)cam.transform.position, Quaternion.identity);
             while (player != null)
             {
                 yield return null;
             }
             lives--;
+            yield return new WaitForSeconds(2);
         }
         OnGameOver();
     }

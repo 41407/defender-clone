@@ -15,6 +15,7 @@ public class PlayerController : MonoBehaviour
     private SpriteRenderer sprite;
     public Vector2 direction;
     private bool invulnerable = false;
+    public GameObject explosionParticlePrefab;
 
     void Awake()
     {
@@ -43,6 +44,7 @@ public class PlayerController : MonoBehaviour
         {
             if (coll.collider.gameObject.layer == LayerMask.NameToLayer("Enemy") || coll.collider.gameObject.layer == LayerMask.NameToLayer("Enemy Bullet"))
             {
+                Factory.create.ByReference(explosionParticlePrefab, transform.position, Quaternion.identity);
                 Destroy(gameObject);
             }
         }
