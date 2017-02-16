@@ -7,20 +7,19 @@ public class PlayerController : MonoBehaviour
     private GameController gameController;
     private Rigidbody2D body;
     private PlayerSpriteController playerSpriteController;
-    public bool moving = false;
+    private SpriteRenderer sprite;
     private int movingTouchId = -1;
     private Vector2 inputPosition;
-    public Vector2 maxVelocity = new Vector2(16, 5);
-    private SpriteRenderer sprite;
-    public Vector2 direction = Vector2.right;
     private bool invulnerable = false;
-    public GameObject explosionParticlePrefab;
-    public float xTranslateDeadzone = 0.1f;
     private Vector2 velocity;
+    public GameObject explosionParticlePrefab;
+    public bool thrusting = false;
+    public Vector2 direction = Vector2.right;
+    public Vector2 maxVelocity = new Vector2(16, 5);
+    public float xTranslateDeadzone = 0.1f;
     public Vector2 acceleration = new Vector2(0.2f, 1);
     public float xBrakingMultiplier = 2;
     public Vector2 deceleration = new Vector2(0.98f, 0.7f);
-    public float maxYTranslateStep = 0.5f;
 
     void Awake()
     {
@@ -32,18 +31,20 @@ public class PlayerController : MonoBehaviour
 
     void OnEnable()
     {
-        EventManager.OnButtonUp += StopMoving;
+        EventManager.OnButtonUp += StopThrusting;
         EventManager.OnButtonHold += UpdateInputPosition;
-        EventManager.OnButtonDown += StartMoving;
-        inputPosition = transform.position;
+        EventManager.OnButtonDown += StartThrusting;
         StartCoroutine(SetSpawnInvulnerability());
     }
 
     void FixedUpdate()
     {
-        TranslateX();
-        TranslateY();
-        velocity.x *= deceleration.x;
+        AccelerateX();
+        AccelerateY();
+        if (!thrusting)
+        {
+            velocity.x *= deceleration.x;
+        }
         velocity.y *= deceleration.y;
         body.velocity = velocity;
     }
@@ -60,9 +61,9 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    private void TranslateX()
+    private void AccelerateX()
     {
-        if (moving && Mathf.Abs(inputPosition.x) > xTranslateDeadzone)
+        if (thrusting && Mathf.Abs(inputPosition.x) > xTranslateDeadzone)
         {
             if (inputPosition.x < 0)
             {
@@ -80,27 +81,26 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    private void TranslateY()
+    private void AccelerateY()
     {
-        if (!moving)
+        if (!thrusting)
         {
             return;
         }
-        float relativeYPosition = body.position.y / gameController.levelHeight - 0.5f;
-        Vector2 targetWorldYPosition = new Vector2(0, inputPosition.y * gameController.levelHeight - body.position.y);
-        velocity.y = Mathf.Clamp(velocity.y + targetWorldYPosition.y * acceleration.y, -maxVelocity.y, maxVelocity.y);
+        float targetPositionY = inputPosition.y * gameController.levelHeight - body.position.y;
+        velocity.y = Mathf.Clamp(velocity.y + targetPositionY * acceleration.y, -maxVelocity.y, maxVelocity.y);
     }
 
     void OnDisable()
     {
-        EventManager.OnButtonUp -= StopMoving;
+        EventManager.OnButtonUp -= StopThrusting;
         EventManager.OnButtonHold -= UpdateInputPosition;
-        EventManager.OnButtonDown -= StartMoving;
+        EventManager.OnButtonDown -= StartThrusting;
     }
 
-    private void StartMoving(Vector2 position, int startedTouchId)
+    private void StartThrusting(Vector2 position, int startedTouchId)
     {
-        moving = true;
+        thrusting = true;
         movingTouchId = startedTouchId;
         inputPosition = position;
     }
@@ -108,19 +108,19 @@ public class PlayerController : MonoBehaviour
     private void UpdateInputPosition(Vector2 position, int heldTouchId)
     {
         inputPosition = position;
-        if (!moving)
+        if (!thrusting)
         {
-            moving = true;
+            thrusting = true;
             movingTouchId = heldTouchId;
             inputPosition = position;
         }
     }
 
-    private void StopMoving(Vector2 position, int releasedTouchId)
+    private void StopThrusting(Vector2 position, int releasedTouchId)
     {
         if (releasedTouchId == movingTouchId)
         {
-            moving = false;
+            thrusting = false;
             inputPosition = position;
         }
     }
