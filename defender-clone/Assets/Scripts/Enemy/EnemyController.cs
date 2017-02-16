@@ -9,6 +9,7 @@ public class EnemyController : MonoBehaviour
     public int scoreOnDestroy = 50;
     public int maxHealth = 1;
     private int health = 1;
+
     void Awake()
     {
         spriteController = GetComponentInChildren<EnemySpriteController>();
@@ -21,17 +22,31 @@ public class EnemyController : MonoBehaviour
 
     void OnCollisionEnter2D(Collision2D coll)
     {
-        if (coll.gameObject.layer == LayerMask.NameToLayer("Player Bullet") || coll.gameObject.layer == LayerMask.NameToLayer("Player"))
+        if (coll.gameObject.layer == LayerMask.NameToLayer("Player Bullet"))
         {
             health--;
-            if (health <= 0)
-            {
-                Explode();
-            }
-            else
-            {
-                spriteController.TakeDamage();
-            }
+
+        }
+        else if (coll.gameObject.layer == LayerMask.NameToLayer("Player"))
+        {
+            health = 0;
+        }
+        else
+        {
+            return;
+        }
+        CheckHealth();
+    }
+
+    private void CheckHealth()
+    {
+        if (health <= 0)
+        {
+            Explode();
+        }
+        else
+        {
+            spriteController.TakeDamage();
         }
     }
 
