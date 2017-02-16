@@ -18,6 +18,7 @@ public class WaveController : MonoBehaviour
         public int appearsAfterWave;
     }
     public EnemyPrefabs[] enemyPrefabs;
+    private GameObject[] availableEnemies;
 
     void Awake()
     {
@@ -33,6 +34,7 @@ public class WaveController : MonoBehaviour
     {
         if (!waveInProgress)
         {
+            SetAvailableEnemies();
             waveInProgress = true;
             StartCoroutine(WaveCo());
             StartCoroutine(SpawnRandomExtraEnemy());
@@ -40,12 +42,21 @@ public class WaveController : MonoBehaviour
         }
     }
 
+    private void SetAvailableEnemies()
+    {
+        var enemiesForThisWave = from enemy in enemyPrefabs
+                                 where enemy.appearsAfterWave <= wave
+                                 select enemy.enemyPrefab;
+        availableEnemies = new GameObject[enemiesForThisWave.Count()];
+        for (int i = 0; i < enemiesForThisWave.Count(); i++)
+        {
+            availableEnemies[i] = enemiesForThisWave.ElementAt(i);
+        }
+    }
+
     public GameObject GetEnemyPrefab()
     {
-        var availableEnemies = from enemy in enemyPrefabs
-                               where enemy.appearsAfterWave <= wave
-                               select enemy.enemyPrefab;
-        return availableEnemies.ElementAt(Random.Range(0, availableEnemies.Count()));
+        return availableEnemies[Random.Range(0, availableEnemies.Length)];
     }
 
     private IEnumerator WaveCo()
