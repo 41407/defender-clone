@@ -10,7 +10,7 @@ public abstract class EnemyBehaviour : MonoBehaviour
     protected Rigidbody2D body;
     protected bool hasAttemptedAbduction = false;
     protected bool abducting = false;
-    public GameObject astronaut;
+    protected GameObject astronaut;
     public Transform player;
     public float speed = 3;
     public float beamingSpeed = 1;
