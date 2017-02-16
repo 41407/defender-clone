@@ -32,25 +32,26 @@ public class EventManager : MonoBehaviour
     {
         for (int button = 0; button < NUMBER_OF_MOUSE_BUTTONS; button++)
         {
+            Vector2 screenSpaceTouchPosition = InputPositionToScreenSpace(Input.mousePosition);
             if (Input.GetMouseButtonDown(button))
             {
                 if (OnButtonDown != null)
                 {
-                    OnButtonDown(Input.mousePosition, button);
+                    OnButtonDown(screenSpaceTouchPosition, button);
                 }
             }
             if (Input.GetMouseButton(button))
             {
                 if (OnButtonHold != null)
                 {
-                    OnButtonHold(Input.mousePosition, button);
+                    OnButtonHold(screenSpaceTouchPosition, button);
                 }
             }
             if (Input.GetMouseButtonUp(button))
             {
                 if (OnButtonUp != null)
                 {
-                    OnButtonUp(Input.mousePosition, button);
+                    OnButtonUp(screenSpaceTouchPosition, button);
                 }
             }
         }
@@ -60,27 +61,33 @@ public class EventManager : MonoBehaviour
     {
         foreach (Touch touch in Input.touches)
         {
+            Vector2 screenSpaceTouchPosition = InputPositionToScreenSpace(touch.position);
             if (touch.phase == TouchPhase.Began)
             {
                 if (OnButtonDown != null)
                 {
-                    OnButtonDown(touch.position, touch.fingerId);
+                    OnButtonDown(screenSpaceTouchPosition, touch.fingerId);
                 }
             }
             if (touch.phase == TouchPhase.Moved || touch.phase == TouchPhase.Stationary)
             {
                 if (OnButtonHold != null)
                 {
-                    OnButtonHold(touch.position, touch.fingerId);
+                    OnButtonHold(screenSpaceTouchPosition, touch.fingerId);
                 }
             }
             if (touch.phase == TouchPhase.Ended || touch.phase == TouchPhase.Canceled)
             {
                 if (OnButtonUp != null)
                 {
-                    OnButtonUp(touch.position, touch.fingerId);
+                    OnButtonUp(screenSpaceTouchPosition, touch.fingerId);
                 }
             }
         }
+    }
+
+    private Vector2 InputPositionToScreenSpace(Vector2 inputPosition)
+    {
+        return new Vector2(inputPosition.x / Screen.width - 0.5f, inputPosition.y / Screen.height - 0.5f);
     }
 }
