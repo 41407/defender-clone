@@ -6,6 +6,7 @@ using System.Linq;
 public class EnemyBehaviour : MonoBehaviour
 {
     private WaveController waveController;
+    private GameController gameController;
     public enum EnemyBehaviourType
     {
         follower,
@@ -16,17 +17,22 @@ public class EnemyBehaviour : MonoBehaviour
     public GameObject astronaut;
     private bool hasAttemptedAbduction = false;
     public EnemyBehaviourType enemyBehaviourType;
-    private Transform player;
+    public Transform player;
     public float speed = 3;
 
     void Awake()
     {
         waveController = Component.FindObjectOfType<WaveController>();
+        gameController = Component.FindObjectOfType<GameController>();
     }
 
     void OnEnable()
     {
         speed = Mathf.Clamp(waveController.wave / 8, 3, 6);
+        if (gameController.player != null)
+        {
+            player = gameController.player.transform;
+        }
         astronaut = null;
         hasAttemptedAbduction = false;
         switch (enemyBehaviourType)
@@ -51,25 +57,11 @@ public class EnemyBehaviour : MonoBehaviour
         StopAllCoroutines();
     }
 
-
-    private void FindPlayer()
-    {
-        PlayerController playerController = Component.FindObjectOfType<PlayerController>();
-        if (playerController != null)
-        {
-            player = playerController.transform;
-        }
-    }
-
     private IEnumerator FollowerBehaviour()
     {
         while (true)
         {
-            if (player == null)
-            {
-                FindPlayer();
-            }
-            else
+            if (player != null)
             {
                 Vector3 playerPosition = player.position;
                 if (!hasAttemptedAbduction)
@@ -114,11 +106,7 @@ public class EnemyBehaviour : MonoBehaviour
         EnemyFiring firing = GetComponent<EnemyFiring>();
         while (true)
         {
-            if (player == null)
-            {
-                FindPlayer();
-            }
-            else
+            if (player != null)
             {
                 Vector3 playerPosition = player.position;
                 if (!hasAttemptedAbduction)

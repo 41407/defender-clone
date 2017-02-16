@@ -59,6 +59,14 @@ public class GameController : MonoBehaviour
             Factory.create.ByReference(playerSpawnParticlePrefab, (Vector2)cam.transform.position, Quaternion.identity);
             yield return new WaitForSeconds(2);
             player = Instantiate(playerPrefab, (Vector2)cam.transform.position, Quaternion.identity);
+            Object[] enemies = Component.FindObjectsOfType<EnemyBehaviour>();
+            for (int i = 0; i < enemies.Length; i++)
+            {
+                if (enemies[i] != null)
+                {
+                    ((EnemyBehaviour)enemies[i]).player = player.transform;
+                }
+            }
             while (player != null)
             {
                 yield return null;
