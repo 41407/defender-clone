@@ -25,7 +25,7 @@ public class PlayerFiring : MonoBehaviour
     {
         while (true)
         {
-            if (playerController.firing)
+            if (playerController.moving)
             {
                 Fire(playerController.direction);
                 yield return new WaitForSeconds(rateOfFire);
