@@ -17,6 +17,11 @@ public class PlayerController : MonoBehaviour
     public Vector2 direction;
     private bool invulnerable = false;
     public GameObject explosionParticlePrefab;
+    public float xTranslateDeadzone = 0.1f;
+    private Vector2 velocity;
+    public float xAcceleration = 0.2f;
+    public float xBrakingMultiplier = 2;
+    public float xDeceleration = 0.95f;
 
     void Awake()
     {
@@ -34,7 +39,7 @@ public class PlayerController : MonoBehaviour
         StartCoroutine(SetSpawnInvulnerability());
     }
 
-    void Update()
+    void FixedUpdate()
     {
         TranslateX();
         TranslateY();
@@ -54,10 +59,9 @@ public class PlayerController : MonoBehaviour
 
     private void TranslateX()
     {
-        float clampTranslate = firing ? maxVelocity * firingVelocityModifier : maxVelocity;
-        if (Vector2.Distance(targetPosition, transform.position) > 0.25f)
+        if (moving && Mathf.Abs(targetPosition.x) > xTranslateDeadzone)
         {
-            if (targetPosition.x < transform.position.x)
+            if (targetPosition.x < 0)
             {
                 direction = Vector2.left;
                 sprite.flipX = true;
@@ -67,13 +71,20 @@ public class PlayerController : MonoBehaviour
                 direction = Vector2.right;
                 sprite.flipX = false;
             }
+            float acceleration = xAcceleration;
+            acceleration *= Mathf.Sign(targetPosition.x) == Mathf.Sign(direction.x) ? 1 : xBrakingMultiplier;
+            velocity += direction * acceleration;
         }
-        transform.Translate(Vector2.ClampMagnitude(new Vector2(targetPosition.x - transform.position.x, 0), clampTranslate) * Time.deltaTime);
+        else
+        {
+            velocity *= xDeceleration;
+        }
+        body.velocity = velocity;
     }
 
     private void TranslateY()
     {
-        body.velocity = Vector2.ClampMagnitude(new Vector2(0, targetPosition.y - transform.position.y), 2) * 8;
+        //body.velocity = Vector2.ClampMagnitude(new Vector2(0, targetPosition.y - transform.position.y), 2) * 8;
     }
 
     void OnDisable()
@@ -101,13 +112,13 @@ public class PlayerController : MonoBehaviour
     {
         if (heldTouchId == movingTouchId)
         {
-            targetPosition = Camera.main.ScreenToWorldPoint(position);
+            targetPosition = position;
         }
         else if (!moving)
         {
             moving = true;
             movingTouchId = heldTouchId;
-            targetPosition = Camera.main.ScreenToWorldPoint(position);
+            targetPosition = position;
         }
     }
 
