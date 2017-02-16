@@ -8,10 +8,8 @@ public class PlayerController : MonoBehaviour
     private Rigidbody2D body;
     private PlayerSpriteController playerSpriteController;
     public bool moving = false;
-    public bool firing = false;
     private int movingTouchId = -1;
-    private int firingTouchId = -1;
-    private Vector2 targetPosition;
+    private Vector2 inputPosition;
     public float maxVelocity = 10;
     private SpriteRenderer sprite;
     public Vector2 direction;
@@ -34,10 +32,10 @@ public class PlayerController : MonoBehaviour
 
     void OnEnable()
     {
-        EventManager.OnButtonUp += StopMovingOrFiring;
-        EventManager.OnButtonHold += UpdateTargetPosition;
-        EventManager.OnButtonDown += StartMovingOrFiring;
-        targetPosition = transform.position;
+        EventManager.OnButtonUp += StopMoving;
+        EventManager.OnButtonHold += UpdateInputPosition;
+        EventManager.OnButtonDown += StartMoving;
+        inputPosition = transform.position;
         StartCoroutine(SetSpawnInvulnerability());
     }
 
@@ -62,9 +60,9 @@ public class PlayerController : MonoBehaviour
 
     private void TranslateX()
     {
-        if (moving && Mathf.Abs(targetPosition.x) > xTranslateDeadzone)
+        if (moving && Mathf.Abs(inputPosition.x) > xTranslateDeadzone)
         {
-            if (targetPosition.x < 0)
+            if (inputPosition.x < 0)
             {
                 direction = Vector2.left;
                 sprite.flipX = true;
@@ -91,7 +89,7 @@ public class PlayerController : MonoBehaviour
             return;
         }
         float relativeYPosition = body.position.y / gameController.levelHeight - 0.5f;
-        Vector2 targetWorldYPosition = new Vector2(body.position.x, targetPosition.y * gameController.levelHeight);
+        Vector2 targetWorldYPosition = new Vector2(body.position.x, inputPosition.y * gameController.levelHeight);
         if (Mathf.Abs(targetWorldYPosition.y) < maxYTranslateStep * 5)
         {
             body.position = new Vector2(body.position.x, Mathf.Lerp(body.position.y, targetWorldYPosition.y, 0.2f));
@@ -104,50 +102,35 @@ public class PlayerController : MonoBehaviour
 
     void OnDisable()
     {
-        EventManager.OnButtonUp -= StopMovingOrFiring;
-        EventManager.OnButtonHold -= UpdateTargetPosition;
-        EventManager.OnButtonDown -= StartMovingOrFiring;
+        EventManager.OnButtonUp -= StopMoving;
+        EventManager.OnButtonHold -= UpdateInputPosition;
+        EventManager.OnButtonDown -= StartMoving;
     }
 
-    private void StartMovingOrFiring(Vector2 position, int startedTouchId)
+    private void StartMoving(Vector2 position, int startedTouchId)
     {
+        moving = true;
+        movingTouchId = startedTouchId;
+        inputPosition = position;
+    }
+
+    private void UpdateInputPosition(Vector2 position, int heldTouchId)
+    {
+        inputPosition = position;
         if (!moving)
         {
             moving = true;
-            movingTouchId = startedTouchId;
-        }
-        if (startedTouchId != movingTouchId && !firing)
-        {
-            firing = true;
-            firingTouchId = startedTouchId;
-        }
-    }
-
-    private void UpdateTargetPosition(Vector2 position, int heldTouchId)
-    {
-        if (heldTouchId == movingTouchId)
-        {
-            targetPosition = position;
-        }
-        else if (!moving)
-        {
-            moving = true;
             movingTouchId = heldTouchId;
-            targetPosition = position;
+            inputPosition = position;
         }
     }
 
-    private void StopMovingOrFiring(Vector2 position, int releasedTouchId)
+    private void StopMoving(Vector2 position, int releasedTouchId)
     {
         if (releasedTouchId == movingTouchId)
         {
             moving = false;
-            firing = false;
-            targetPosition = transform.position;
-        }
-        else if (releasedTouchId == firingTouchId)
-        {
-            firing = false;
+            inputPosition = position;
         }
     }
 
