@@ -7,7 +7,6 @@ public class PlayerController : MonoBehaviour
     private GameController gameController;
     private Rigidbody2D body;
     private PlayerSpriteController playerSpriteController;
-    private SpriteRenderer sprite;
     private int movingTouchId = -1;
     private Vector2 inputPosition;
     private bool invulnerable = false;
@@ -25,7 +24,6 @@ public class PlayerController : MonoBehaviour
     {
         gameController = Component.FindObjectOfType<GameController>();
         playerSpriteController = GetComponentInChildren<PlayerSpriteController>();
-        sprite = transform.GetComponentInChildren<SpriteRenderer>();
         body = GetComponent<Rigidbody2D>();
     }
 
@@ -68,12 +66,12 @@ public class PlayerController : MonoBehaviour
             if (inputPosition.x < 0)
             {
                 direction = Vector2.left;
-                sprite.flipX = true;
+                playerSpriteController.flipX = true;
             }
             else
             {
                 direction = Vector2.right;
-                sprite.flipX = false;
+                playerSpriteController.flipX = false;
             }
             float currentAcceleration = acceleration.x;
             currentAcceleration *= Mathf.Sign(direction.x) == Mathf.Sign(velocity.x) ? 1 : xBrakingMultiplier;

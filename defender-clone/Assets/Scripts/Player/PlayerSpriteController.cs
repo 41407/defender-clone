@@ -25,6 +25,17 @@ public class PlayerSpriteController : MonoBehaviour
             }
         }
     }
+    public bool flipX
+    {
+        get
+        {
+            return sprite.flipX;
+        }
+        set
+        {
+            sprite.flipX = value;
+        }
+    }
     private Color mainColor;
     public Color[] blinkColors = { Color.black, Color.white };
     public int flashFrames = 2;
