@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
+    private GameController gameController;
     private Rigidbody2D body;
     private PlayerSpriteController playerSpriteController;
     public bool moving = false;
@@ -19,12 +20,14 @@ public class PlayerController : MonoBehaviour
     public GameObject explosionParticlePrefab;
     public float xTranslateDeadzone = 0.1f;
     private Vector2 velocity;
-    public float xAcceleration = 0.2f;
+    public Vector2 acceleration = new Vector2(0.2f, 1);
     public float xBrakingMultiplier = 2;
-    public float xDeceleration = 0.95f;
+    public Vector2 deceleration = new Vector2(0.98f, 0.7f);
+    public float maxYTranslateStep = 0.5f;
 
     void Awake()
     {
+        gameController = Component.FindObjectOfType<GameController>();
         playerSpriteController = GetComponentInChildren<PlayerSpriteController>();
         sprite = transform.GetComponentInChildren<SpriteRenderer>();
         body = GetComponent<Rigidbody2D>();
@@ -43,6 +46,7 @@ public class PlayerController : MonoBehaviour
     {
         TranslateX();
         TranslateY();
+        body.velocity = velocity;
     }
 
     void OnCollisionEnter2D(Collision2D coll)
@@ -71,20 +75,32 @@ public class PlayerController : MonoBehaviour
                 direction = Vector2.right;
                 sprite.flipX = false;
             }
-            float acceleration = xAcceleration;
-            acceleration *= Mathf.Sign(targetPosition.x) == Mathf.Sign(direction.x) ? 1 : xBrakingMultiplier;
-            velocity += direction * acceleration;
+            float currentAcceleration = acceleration.x;
+            currentAcceleration *= Mathf.Sign(targetPosition.x) == Mathf.Sign(direction.x) ? 1 : xBrakingMultiplier;
+            velocity += direction * currentAcceleration;
         }
         else
         {
-            velocity *= xDeceleration;
+            velocity = new Vector2(velocity.x * deceleration.x, velocity.y);
         }
-        body.velocity = velocity;
     }
 
     private void TranslateY()
     {
-        //body.velocity = Vector2.ClampMagnitude(new Vector2(0, targetPosition.y - transform.position.y), 2) * 8;
+        if (!moving)
+        {
+            return;
+        }
+        float relativeYPosition = body.position.y / gameController.levelHeight - 0.5f;
+        Vector2 targetWorldYPosition = new Vector2(body.position.x, targetPosition.y * gameController.levelHeight);
+        if (Mathf.Abs(targetWorldYPosition.y) < maxYTranslateStep * 5)
+        {
+            body.position = new Vector2(body.position.x, Mathf.Lerp(body.position.y, targetWorldYPosition.y, 0.2f));
+        }
+        else
+        {
+            body.position = Vector2.MoveTowards(body.position, targetWorldYPosition, maxYTranslateStep);
+        }
     }
 
     void OnDisable()

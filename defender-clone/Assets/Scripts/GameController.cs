@@ -8,6 +8,7 @@ public class GameController : MonoBehaviour
     private HUDMessageViewerController messageViewer;
     public Camera cam;
     public float levelWidth = 70;
+    public float levelHeight = 10;
     public GameObject player;
     public GameObject playerSpawnParticlePrefab;
     public GameObject playerPrefab;
