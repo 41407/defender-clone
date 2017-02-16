@@ -13,7 +13,6 @@ public class PlayerController : MonoBehaviour
     private int firingTouchId = -1;
     private Vector2 targetPosition;
     public float maxVelocity = 10;
-    public float firingVelocityModifier = 0.4f;
     private SpriteRenderer sprite;
     public Vector2 direction;
     private bool invulnerable = false;
@@ -76,8 +75,8 @@ public class PlayerController : MonoBehaviour
                 sprite.flipX = false;
             }
             float currentAcceleration = acceleration.x;
-            currentAcceleration *= Mathf.Sign(targetPosition.x) == Mathf.Sign(direction.x) ? 1 : xBrakingMultiplier;
-            velocity += direction * currentAcceleration;
+            currentAcceleration *= Mathf.Sign(direction.x) == Mathf.Sign(velocity.x) ? 1 : xBrakingMultiplier;
+            velocity = Vector2.ClampMagnitude(velocity + direction * currentAcceleration, maxVelocity);
         }
         else
         {
