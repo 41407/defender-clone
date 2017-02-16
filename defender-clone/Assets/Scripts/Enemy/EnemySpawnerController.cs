@@ -7,6 +7,7 @@ public class EnemySpawnerController : MonoBehaviour
     private WaveController waveController;
     public GameObject spawnParticlePrefab;
     public float spawnDelay;
+    private float currentTime;
 
     void Awake()
     {
@@ -15,14 +16,17 @@ public class EnemySpawnerController : MonoBehaviour
 
     void OnEnable()
     {
-        StartCoroutine(SpawnAfterDelay(spawnDelay));
+        currentTime = 0;
+        Factory.create.ByReference(spawnParticlePrefab, transform.position, Quaternion.identity);
     }
 
-    private IEnumerator SpawnAfterDelay(float delay)
+    void FixedUpdate()
     {
-        Factory.create.ByReference(spawnParticlePrefab, transform.position, Quaternion.identity);
-        yield return new WaitForSeconds(spawnDelay);
-        Factory.create.ByReference(waveController.GetEnemyPrefab(), transform.position, Quaternion.identity, transform.parent);
-        gameObject.SetActive(false);
+        currentTime += Time.fixedDeltaTime;
+        if (currentTime >= spawnDelay)
+        {
+            Factory.create.ByReference(waveController.GetEnemyPrefab(), transform.position, Quaternion.identity, transform.parent);
+            gameObject.SetActive(false);
+        }
     }
 }
