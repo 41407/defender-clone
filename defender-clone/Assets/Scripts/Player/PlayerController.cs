@@ -10,9 +10,9 @@ public class PlayerController : MonoBehaviour
     public bool moving = false;
     private int movingTouchId = -1;
     private Vector2 inputPosition;
-    public float maxVelocity = 10;
+    public Vector2 maxVelocity = new Vector2(16, 5);
     private SpriteRenderer sprite;
-    public Vector2 direction;
+    public Vector2 direction = Vector2.right;
     private bool invulnerable = false;
     public GameObject explosionParticlePrefab;
     public float xTranslateDeadzone = 0.1f;
@@ -43,6 +43,8 @@ public class PlayerController : MonoBehaviour
     {
         TranslateX();
         TranslateY();
+        velocity.x *= deceleration.x;
+        velocity.y *= deceleration.y;
         body.velocity = velocity;
     }
 
@@ -74,11 +76,7 @@ public class PlayerController : MonoBehaviour
             }
             float currentAcceleration = acceleration.x;
             currentAcceleration *= Mathf.Sign(direction.x) == Mathf.Sign(velocity.x) ? 1 : xBrakingMultiplier;
-            velocity = Vector2.ClampMagnitude(velocity + direction * currentAcceleration, maxVelocity);
-        }
-        else
-        {
-            velocity = new Vector2(velocity.x * deceleration.x, velocity.y);
+            velocity.x = Mathf.Clamp(velocity.x + direction.x * currentAcceleration, -maxVelocity.x, maxVelocity.x);
         }
     }
 
@@ -89,15 +87,8 @@ public class PlayerController : MonoBehaviour
             return;
         }
         float relativeYPosition = body.position.y / gameController.levelHeight - 0.5f;
-        Vector2 targetWorldYPosition = new Vector2(body.position.x, inputPosition.y * gameController.levelHeight);
-        if (Mathf.Abs(targetWorldYPosition.y) < maxYTranslateStep * 5)
-        {
-            body.position = new Vector2(body.position.x, Mathf.Lerp(body.position.y, targetWorldYPosition.y, 0.2f));
-        }
-        else
-        {
-            body.position = Vector2.MoveTowards(body.position, targetWorldYPosition, maxYTranslateStep);
-        }
+        Vector2 targetWorldYPosition = new Vector2(0, inputPosition.y * gameController.levelHeight - body.position.y);
+        velocity.y = Mathf.Clamp(velocity.y + targetWorldYPosition.y * acceleration.y, -maxVelocity.y, maxVelocity.y);
     }
 
     void OnDisable()
