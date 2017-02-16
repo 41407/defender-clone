@@ -3,30 +3,26 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 
-public class EnemyBehaviour : MonoBehaviour
+public abstract class EnemyBehaviour : MonoBehaviour
 {
-    private WaveController waveController;
-    private GameController gameController;
-    public enum EnemyBehaviourType
-    {
-        follower,
-        shooter,
-        exploding,
-        mineLaying
-    }
+    protected WaveController waveController;
+    protected GameController gameController;
+    protected Rigidbody2D body;
+    protected bool hasAttemptedAbduction = false;
+    protected bool abducting = false;
     public GameObject astronaut;
-    private bool hasAttemptedAbduction = false;
-    public EnemyBehaviourType enemyBehaviourType;
     public Transform player;
     public float speed = 3;
+    public float beamingSpeed = 1;
 
-    void Awake()
+    protected virtual void Awake()
     {
+        body = GetComponent<Rigidbody2D>();
         waveController = Component.FindObjectOfType<WaveController>();
         gameController = Component.FindObjectOfType<GameController>();
     }
 
-    void OnEnable()
+    protected virtual void OnEnable()
     {
         speed = Mathf.Clamp(waveController.wave / 8, 3, 6);
         if (gameController.player != null)
@@ -35,142 +31,48 @@ public class EnemyBehaviour : MonoBehaviour
         }
         astronaut = null;
         hasAttemptedAbduction = false;
-        switch (enemyBehaviourType)
+        abducting = false;
+    }
+
+    protected virtual void AttemptAbduction()
+    {
+        hasAttemptedAbduction = true;
+        astronaut = FindClosestAstronaut(transform.position);
+        if (astronaut != null)
         {
-            case EnemyBehaviourType.follower:
-                StartCoroutine(FollowerBehaviour());
-                break;
-            case EnemyBehaviourType.shooter:
-                StartCoroutine(ShooterBehaviour());
-                break;
-            case EnemyBehaviourType.mineLaying:
-                StartCoroutine(MineLayingBehaviour());
-                break;
-            default:
-                StartCoroutine(FollowerBehaviour());
-                break;
-        }
-    }
-
-    void OnDisable()
-    {
-        StopAllCoroutines();
-    }
-
-    private IEnumerator FollowerBehaviour()
-    {
-        yield return null;
-    }
-
-    private IEnumerator MineLayingBehaviour()
-    {
-        Vector2 direction = Random.value > 0.5f ? Vector2.right : Vector2.left;
-        EnemyFiring firing = GetComponent<EnemyFiring>();
-        float timeSinceMine = 0;
-        while (true)
-        {
-            timeSinceMine += Time.deltaTime;
-            transform.Translate(direction * speed * Time.deltaTime);
-            if (timeSinceMine > 1)
+            AstronautController ac = astronaut.GetComponent<AstronautController>();
+            if (!ac.beingAbducted && Vector2.Distance(transform.position, astronaut.transform.position) < 20)
             {
-                direction.y = Random.Range(-0.5f, 0.5f);
-                firing.FireBurst(Vector2.zero, 1);
-                timeSinceMine = 0;
-            }
-            if (transform.position.y > 4)
-            {
-                direction.y = -1;
-            }
-            else if (transform.position.y < -4)
-            {
-                direction.y = 1;
-            }
-            yield return null;
-        }
-    }
-
-    private IEnumerator ShooterBehaviour()
-    {
-        EnemyFiring firing = GetComponent<EnemyFiring>();
-        while (true)
-        {
-            if (player != null)
-            {
-                Vector3 playerPosition = player.position;
-                if (!hasAttemptedAbduction)
-                {
-                    yield return AttemptAbduction();
-                }
-                if (Vector2.Distance(playerPosition, transform.position) > 5)
-                {
-                    transform.Translate((playerPosition - transform.position).normalized * speed * Time.deltaTime);
-                }
-                else
-                {
-                    firing.FireBurst(playerPosition - transform.position, Mathf.Clamp(waveController.wave / 5, 3, 10));
-                    if (waveController.wave > 6)
-                    {
-                        yield return StartCoroutine(MoveAlongYForDuration(1));
-                    }
-                }
-            }
-            yield return null;
-        }
-    }
-
-    private IEnumerator MoveAlongYForDuration(float duration)
-    {
-        Vector2 translation = new Vector2(0, Random.Range(-speed, speed));
-        for (float time = 0; time < duration; time += Time.deltaTime)
-        {
-            if (transform.position.y > 4)
-            {
-                translation = new Vector2(0, -translation.y);
-            }
-            transform.Translate(translation * Time.deltaTime);
-            yield return null;
-        }
-    }
-
-    private IEnumerator AttemptAbduction()
-    {
-        if (Vector2.Distance(player.position, transform.position) > 20)
-        {
-            hasAttemptedAbduction = true;
-            astronaut = FindClosestAstronaut(transform.position);
-            if (astronaut != null)
-            {
-                AstronautController ac = astronaut.GetComponent<AstronautController>();
-                if (!ac.beingAbducted && Vector2.Distance(transform.position, astronaut.transform.position) < 20)
-                {
-                    ac.beingAbducted = true;
-                    yield return Abduct();
-                }
-                else
-                {
-                    yield return null;
-                }
+                ac.beingAbducted = true;
+                abducting = true;
             }
         }
     }
 
-    private IEnumerator Abduct()
+    protected virtual void Abduct()
     {
-        while (astronaut.activeInHierarchy)
+        if (!astronaut.activeInHierarchy)
         {
-            if (astronaut.GetComponent<AstronautController>().abductor == gameObject)
-            {
-                transform.Translate(Vector2.up * 1f * Time.deltaTime);
-            }
-            else
-            {
-                transform.Translate((astronaut.transform.position - transform.position).normalized * speed * Time.deltaTime);
-            }
-            yield return null;
+            astronaut = null;
+            abducting = false;
+            return;
+        }
+        if (astronaut.GetComponent<AstronautController>().abductor == gameObject)
+        {
+            transform.Translate(Vector2.up * beamingSpeed * Time.fixedDeltaTime);
+        }
+        else
+        {
+            MoveTowardsPosition(astronaut.transform.position);
         }
     }
-    
-    private GameObject FindClosestAstronaut(Vector2 position)
+
+    protected virtual void MoveTowardsPosition(Vector2 position)
+    {
+        transform.Translate((position - (Vector2)transform.position).normalized * speed * Time.fixedDeltaTime);
+    }
+
+    protected virtual GameObject FindClosestAstronaut(Vector2 position)
     {
         GameObject[] astronauts = GameObject.FindGameObjectsWithTag("Astronaut");
         if (astronauts.Length > 0)
