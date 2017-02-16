@@ -35,6 +35,13 @@ public class PlayerController : MonoBehaviour
         StartCoroutine(SetSpawnInvulnerability());
     }
 
+    void OnDisable()
+    {
+        EventManager.OnButtonUp -= StopThrusting;
+        EventManager.OnButtonHold -= UpdateInputPosition;
+        EventManager.OnButtonDown -= StartThrusting;
+    }
+
     void FixedUpdate()
     {
         AccelerateX();
@@ -91,12 +98,6 @@ public class PlayerController : MonoBehaviour
         velocity.y = Mathf.Clamp(velocity.y + targetPositionY * currentAcceleration, -maxVelocity.y, maxVelocity.y);
     }
 
-    void OnDisable()
-    {
-        EventManager.OnButtonUp -= StopThrusting;
-        EventManager.OnButtonHold -= UpdateInputPosition;
-        EventManager.OnButtonDown -= StartThrusting;
-    }
 
     private void StartThrusting(Vector2 position, int startedTouchId)
     {
