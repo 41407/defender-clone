@@ -6,21 +6,24 @@ public class BulletController : MonoBehaviour
 {
     public GameObject explosionParticlePrefab;
     public float timeToLive = 2;
+    private float currentTime = 0;
 
     void OnEnable()
     {
-        StartCoroutine(DisableAfterTime(timeToLive));
+        currentTime = 0;
+    }
+
+    void FixedUpdate()
+    {
+        currentTime += Time.fixedDeltaTime;
+        if (currentTime >= timeToLive)
+        {
+            Disable();
+        }
     }
 
     void OnCollisionEnter2D(Collision2D coll)
     {
-        StopCoroutine(DisableAfterTime(timeToLive));
-        Disable();
-    }
-
-    private IEnumerator DisableAfterTime(float ttl)
-    {
-        yield return new WaitForSeconds(ttl);
         Disable();
     }
 
