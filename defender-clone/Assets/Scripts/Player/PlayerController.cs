@@ -99,30 +99,32 @@ public class PlayerController : MonoBehaviour
     }
 
 
-    private void StartThrusting(Vector2 position, int startedTouchId)
+    private void StartThrusting(Vector2 inputEventPosition, int startedTouchId)
     {
         thrusting = true;
         movingTouchId = startedTouchId;
-        inputPosition = position;
+        inputPosition = inputEventPosition;
     }
 
-    private void UpdateInputPosition(Vector2 position, int heldTouchId)
+    private void UpdateInputPosition(Vector2 inputEventPosition, int heldTouchId)
     {
-        inputPosition = position;
         if (!thrusting)
         {
             thrusting = true;
             movingTouchId = heldTouchId;
-            inputPosition = position;
+        }
+        if (heldTouchId == movingTouchId)
+        {
+            inputPosition = inputEventPosition;
         }
     }
 
-    private void StopThrusting(Vector2 position, int releasedTouchId)
+    private void StopThrusting(Vector2 inputEventPosition, int releasedTouchId)
     {
         if (releasedTouchId == movingTouchId)
         {
             thrusting = false;
-            inputPosition = position;
+            inputPosition = inputEventPosition;
         }
     }
 
