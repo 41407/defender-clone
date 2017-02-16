@@ -59,19 +59,7 @@ public class EnemyBehaviour : MonoBehaviour
 
     private IEnumerator FollowerBehaviour()
     {
-        while (true)
-        {
-            if (player != null)
-            {
-                Vector3 playerPosition = player.position;
-                if (!hasAttemptedAbduction)
-                {
-                    yield return AttemptAbduction();
-                }
-                transform.Translate((playerPosition - transform.position).normalized * speed * Time.deltaTime);
-            }
-            yield return null;
-        }
+        yield return null;
     }
 
     private IEnumerator MineLayingBehaviour()
@@ -181,6 +169,7 @@ public class EnemyBehaviour : MonoBehaviour
             yield return null;
         }
     }
+    
     private GameObject FindClosestAstronaut(Vector2 position)
     {
         GameObject[] astronauts = GameObject.FindGameObjectsWithTag("Astronaut");
