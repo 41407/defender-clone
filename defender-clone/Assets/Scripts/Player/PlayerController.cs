@@ -17,7 +17,7 @@ public class PlayerController : MonoBehaviour
     public Vector2 maxVelocity = new Vector2(16, 5);
     public float xTranslateDeadzone = 0.1f;
     public Vector2 acceleration = new Vector2(0.2f, 1);
-    public float xBrakingMultiplier = 2;
+    public Vector2 brakingMultiplier = new Vector2(2, 1);
     public Vector2 deceleration = new Vector2(0.98f, 0.7f);
 
     void Awake()
@@ -74,7 +74,7 @@ public class PlayerController : MonoBehaviour
                 playerSpriteController.flipX = false;
             }
             float currentAcceleration = acceleration.x;
-            currentAcceleration *= Mathf.Sign(direction.x) == Mathf.Sign(velocity.x) ? 1 : xBrakingMultiplier;
+            currentAcceleration *= Mathf.Sign(direction.x) == Mathf.Sign(velocity.x) ? 1 : brakingMultiplier.x;
             velocity.x = Mathf.Clamp(velocity.x + direction.x * currentAcceleration, -maxVelocity.x, maxVelocity.x);
         }
     }
@@ -86,7 +86,9 @@ public class PlayerController : MonoBehaviour
             return;
         }
         float targetPositionY = inputPosition.y * gameController.levelHeight - body.position.y;
-        velocity.y = Mathf.Clamp(velocity.y + targetPositionY * acceleration.y, -maxVelocity.y, maxVelocity.y);
+        float currentAcceleration = acceleration.y;
+        currentAcceleration *= Mathf.Sign(targetPositionY) == Mathf.Sign(velocity.y) ? 1 : brakingMultiplier.y;
+        velocity.y = Mathf.Clamp(velocity.y + targetPositionY * currentAcceleration, -maxVelocity.y, maxVelocity.y);
     }
 
     void OnDisable()
