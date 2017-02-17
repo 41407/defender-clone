@@ -7,10 +7,11 @@ public class PlayerController : MonoBehaviour
     private GameController gameController;
     private Rigidbody2D body;
     private PlayerSpriteController playerSpriteController;
+    private PlayerThrusterParticles playerThrusterParticles;
     private int movingTouchId = -1;
     private Vector2 inputPosition;
     private bool invulnerable = false;
-    private Vector2 velocity;
+    public Vector2 velocity;
     public GameObject explosionParticlePrefab;
     public bool thrusting = false;
     public Vector2 direction = Vector2.right;
@@ -24,6 +25,7 @@ public class PlayerController : MonoBehaviour
     {
         gameController = Component.FindObjectOfType<GameController>();
         playerSpriteController = GetComponentInChildren<PlayerSpriteController>();
+        playerThrusterParticles = GetComponentInChildren<PlayerThrusterParticles>();
         body = GetComponent<Rigidbody2D>();
     }
 
@@ -83,6 +85,11 @@ public class PlayerController : MonoBehaviour
             float currentAcceleration = acceleration.x;
             currentAcceleration *= Mathf.Sign(direction.x) == Mathf.Sign(velocity.x) ? 1 : brakingAccelerationMultiplier.x;
             velocity.x = Mathf.Clamp(velocity.x + direction.x * currentAcceleration, -maxVelocity.x, maxVelocity.x);
+            playerThrusterParticles.Emit();
+        }
+        else if (thrusting)
+        {
+            playerThrusterParticles.Idle();
         }
     }
 
